@@ -1,8 +1,6 @@
 package app
 
 import (
-	crypto_rand "crypto/rand"
-	"encoding/binary"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -12,12 +10,6 @@ import (
 	"strings"
 	"time"
 )
-
-type config struct {
-	fileName  string
-	timeLimit int
-	shuffle   bool
-}
 
 type problem struct {
 	question string
@@ -34,18 +26,6 @@ func (this *score) rate() int {
 }
 
 type quizData [][]string
-
-func InitRandSeed() {
-	// This is better than calling: rand.Seed(time.Now().UnixNano())
-	var b [8]byte
-
-	_, err := crypto_rand.Read(b[:])
-	if err != nil {
-		panic("cannot seed math/rand package with cryptographically secure random number generator")
-	}
-
-	math_rand.Seed(int64(binary.LittleEndian.Uint64(b[:])))
-}
 
 func RunApp() {
 	fmt.Println("quiz app")
@@ -65,12 +45,6 @@ func RunApp() {
 }
 
 func setup() config {
-	defaults := config{
-		fileName:  "./data/problems.csv",
-		timeLimit: 30,
-		shuffle:   false,
-	}
-
 	csvFileName := flag.String("csv", defaults.fileName, "a csv file in the format of 'question,answwer'")
 	timeLimit := flag.Int("limit", defaults.timeLimit, "the time limit for the quiz in seconds")
 	shuffle := flag.Bool("shuffle", defaults.shuffle, "shuffle the questions")
