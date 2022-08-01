@@ -1,11 +1,13 @@
 package app
 
 import (
+	crypto_rand "crypto/rand"
+	"encoding/binary"
 	"encoding/csv"
 	"flag"
 	"fmt"
 	"math"
-	"math/rand"
+	math_rand "math/rand"
 	"os"
 	"strings"
 	"time"
@@ -33,6 +35,18 @@ func (this *score) rate() int {
 
 type quizData [][]string
 
+func InitRandSeed() {
+	// This is better than calling: rand.Seed(time.Now().UnixNano())
+	var b [8]byte
+
+	_, err := crypto_rand.Read(b[:])
+	if err != nil {
+		panic("cannot seed math/rand package with cryptographically secure random number generator")
+	}
+
+	math_rand.Seed(int64(binary.LittleEndian.Uint64(b[:])))
+}
+
 func RunApp() {
 	fmt.Println("quiz app")
 	fmt.Println()
@@ -51,8 +65,6 @@ func RunApp() {
 }
 
 func setup() config {
-	rand.Seed(time.Now().UnixNano())
-
 	defaults := config{
 		fileName:  "./data/problems.csv",
 		timeLimit: 30,
@@ -72,7 +84,7 @@ func setup() config {
 }
 
 func shuffleData(data quizData) {
-	rand.Shuffle(len(data), func(i, j int) {
+	math_rand.Shuffle(len(data), func(i, j int) {
 		data[i], data[j] = data[j], data[i]
 	})
 }
