@@ -7,10 +7,12 @@ import (
 	"math"
 	"os"
 	"strings"
+	"time"
 )
 
 type config struct {
-	fileName string
+	fileName  string
+	timeLimit int
 }
 
 type problem struct {
@@ -39,21 +41,26 @@ func RunApp() {
 
 	problems := parseLines(data)
 
-	result := runQuiz(problems)
+	timer := createTimer(c)
+
+	result := runQuiz(c, problems, timer)
 
 	showScore(result)
 }
 
 func setup() config {
 	defaults := config{
-		fileName: "./data/problems.csv",
+		fileName:  "./data/problems.csv",
+		timeLimit: 30,
 	}
 
 	csvFileName := flag.String("csv", defaults.fileName, "a csv file in the format of 'question,answwer'")
+	timeLimit := flag.Int("limit", defaults.timeLimit, "the time limit for the quiz in seconds")
 	flag.Parse()
 
 	return config{
-		fileName: *csvFileName,
+		fileName:  *csvFileName,
+		timeLimit: *timeLimit,
 	}
 }
 
@@ -88,15 +95,32 @@ func parseLines(lines quizData) []problem {
 	return result
 }
 
-func runQuiz(problems []problem) score {
+func runQuiz(c config, problems []problem, timer *time.Timer) score {
 	s := score{
 		points: 0,
 		max:    len(problems),
 	}
 
+	fmt.Println()
+	fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
+	fmt.Println()
+
 	for i, p := range problems {
-		if askQuestion(i, p) {
-			s.points++
+		answerCh := make(chan bool)
+		go func() {
+			answerCh <- askQuestion(i, p)
+		}()
+
+		select {
+		case <-timer.C:
+			fmt.Println()
+			fmt.Println()
+			fmt.Println("Time's up!")
+			return s
+		case response := <-answerCh:
+			if response {
+				s.points++
+			}
 		}
 	}
 
@@ -116,6 +140,11 @@ func showScore(s score) {
 	fmt.Println()
 	fmt.Printf("You scored %d out of %d points (%v%%).\n", s.points, s.max, s.rate())
 	fmt.Println()
+}
+
+func createTimer(c config) *time.Timer {
+	timer := time.NewTimer(time.Duration(c.timeLimit) * time.Second)
+	return timer
 }
 
 func Exit(msg string) {
