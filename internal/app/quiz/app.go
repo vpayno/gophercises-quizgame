@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -13,6 +14,7 @@ import (
 type config struct {
 	fileName  string
 	timeLimit int
+	shuffle   bool
 }
 
 type problem struct {
@@ -49,19 +51,30 @@ func RunApp() {
 }
 
 func setup() config {
+	rand.Seed(time.Now().UnixNano())
+
 	defaults := config{
 		fileName:  "./data/problems.csv",
 		timeLimit: 30,
+		shuffle:   false,
 	}
 
 	csvFileName := flag.String("csv", defaults.fileName, "a csv file in the format of 'question,answwer'")
 	timeLimit := flag.Int("limit", defaults.timeLimit, "the time limit for the quiz in seconds")
+	shuffle := flag.Bool("shuffle", defaults.shuffle, "shuffle the questions")
 	flag.Parse()
 
 	return config{
 		fileName:  *csvFileName,
 		timeLimit: *timeLimit,
+		shuffle:   *shuffle,
 	}
+}
+
+func shuffleData(data quizData) {
+	rand.Shuffle(len(data), func(i, j int) {
+		data[i], data[j] = data[j], data[i]
+	})
 }
 
 func loadData(c config) quizData {
@@ -77,6 +90,10 @@ func loadData(c config) quizData {
 	lines, err := r.ReadAll()
 	if err != nil {
 		Exit(fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
+	}
+
+	if c.shuffle {
+		shuffleData(lines)
 	}
 
 	return lines
