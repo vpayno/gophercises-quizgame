@@ -1,9 +1,11 @@
+[![Go Workflow](https://github.com/vpayno/gophercises-quizgame/actions/workflows/go.yml/badge.svg)](https://github.com/vpayno/gophercises-quizgame/actions/workflows/go.yml)
+
 # Gophercises Quiz Game Implementation
 
 ## Gophercises Info
 
-[Website](https://courses.calhoun.io/lessons/les_goph_01)
-[GitHub](https://github.com/gophercises/quiz)
+- [Website](https://courses.calhoun.io/lessons/les_goph_01)
+- [GitHub](https://github.com/gophercises/quiz)
 
 ## How to Install
 
