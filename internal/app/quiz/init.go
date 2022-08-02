@@ -16,7 +16,7 @@ type appInfo struct {
 	buildTime  string
 }
 
-var metadata appInfo = appInfo{
+var metadata = appInfo{
 	name:       "Gophercise Quiz App",
 	version:    "0.0.0",
 	gitVersion: "0.0.0",
@@ -30,7 +30,7 @@ type config struct {
 	shuffle   bool
 }
 
-var defaults config = config{
+var defaults = config{
 	fileName:  "./data/problems.csv",
 	timeLimit: 30,
 	shuffle:   false,
