@@ -80,7 +80,11 @@ func loadData(c config) quizData {
 		Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
 	}
 
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	r := csv.NewReader(file)
 
