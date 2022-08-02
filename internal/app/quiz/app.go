@@ -145,12 +145,18 @@ func runQuiz(c config, problems []problem, timer *time.Timer) score {
 }
 
 func askQuestion(i int, p problem) bool {
-	fmt.Printf("%d) %s = ", i+1, p.question)
+	for {
+		fmt.Printf("%d) %s = ", i+1, p.question)
 
-	var response string
-	fmt.Scanf("%s", &response)
+		var response string
+		count, err := fmt.Scanf("%s", &response)
 
-	return response == p.answer
+		if count == 1 && err == nil {
+			return response == p.answer
+		}
+
+		fmt.Println("error enountered, restarting question")
+	}
 }
 
 func showScore(s score) {
