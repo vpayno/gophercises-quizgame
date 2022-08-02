@@ -74,7 +74,7 @@ func InitRandSeed() {
 	math_rand.Seed(int64(binary.LittleEndian.Uint64(b[:])))
 }
 
-// Exit is used to prematurly end the application with an exit code and message to stdout.
+// Exit is used to prematurely end the application with an exit code and message to stdout.
 func Exit(code int, msg string) {
 	fmt.Println(msg)
 	os.Exit(code)
