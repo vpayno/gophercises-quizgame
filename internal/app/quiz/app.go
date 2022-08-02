@@ -21,8 +21,8 @@ type score struct {
 	max    int
 }
 
-func (this *score) rate() int {
-	return int(math.Round(float64(this.points) / float64(this.max) * 100))
+func (s *score) rate() int {
+	return int(math.Round(float64(s.points) / float64(s.max) * 100))
 }
 
 type quizData [][]string
@@ -32,6 +32,7 @@ func showBanner() {
 	fmt.Println()
 }
 
+// RunApp is called my the main function. It's basically the main function of the app.
 func RunApp() {
 	c := setup()
 
@@ -79,7 +80,11 @@ func loadData(c config) quizData {
 		Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
 	}
 
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Printf("Error closing file: %s\n", err)
+		}
+	}()
 
 	r := csv.NewReader(file)
 
@@ -140,12 +145,18 @@ func runQuiz(c config, problems []problem, timer *time.Timer) score {
 }
 
 func askQuestion(i int, p problem) bool {
-	fmt.Printf("%d) %s = ", i+1, p.question)
+	for {
+		fmt.Printf("%d) %s = ", i+1, p.question)
 
-	var response string
-	fmt.Scanf("%s", &response)
+		var response string
+		count, err := fmt.Scanf("%s", &response)
 
-	return response == p.answer
+		if count == 1 && err == nil {
+			return response == p.answer
+		}
+
+		fmt.Println("error enountered, restarting question")
+	}
 }
 
 func showScore(s score) {
@@ -157,9 +168,4 @@ func showScore(s score) {
 func createTimer(c config) *time.Timer {
 	timer := time.NewTimer(time.Duration(c.timeLimit) * time.Second)
 	return timer
-}
-
-func Exit(code int, msg string) {
-	fmt.Println(msg)
-	os.Exit(code)
 }

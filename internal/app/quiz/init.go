@@ -5,9 +5,10 @@ import (
 	"encoding/binary"
 	"fmt"
 	math_rand "math/rand"
+	"os"
 )
 
-type AppInfo struct {
+type appInfo struct {
 	name       string
 	version    string
 	gitVersion string
@@ -15,7 +16,7 @@ type AppInfo struct {
 	buildTime  string
 }
 
-var metadata AppInfo = AppInfo{
+var metadata = appInfo{
 	name:       "Gophercise Quiz App",
 	version:    "0.0.0",
 	gitVersion: "0.0.0",
@@ -29,12 +30,13 @@ type config struct {
 	shuffle   bool
 }
 
-var defaults config = config{
+var defaults = config{
 	fileName:  "./data/problems.csv",
 	timeLimit: 30,
 	shuffle:   false,
 }
 
+// SetVersion is used my the main package to pass version information to the app package.
 func SetVersion(slice ...string) {
 	if slice[0] != "" {
 		metadata.version = slice[0]
@@ -70,4 +72,10 @@ func InitRandSeed() {
 	}
 
 	math_rand.Seed(int64(binary.LittleEndian.Uint64(b[:])))
+}
+
+// Exit is used to prematurely end the application with an exit code and message to stdout.
+func Exit(code int, msg string) {
+	fmt.Println(msg)
+	os.Exit(code)
 }

@@ -1,0 +1,98 @@
+name: Go Workflow
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        go-version: ["1.18"]
+        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+        exclude:
+          - os: "macos-latest"
+            go-version: "1.18"
+          - os: "windows-latest"
+            go-version: "1.18"
+
+    runs-on: "${{ matrix.os }}"
+
+    steps:
+    - name: Checkout Repo
+      id: checkout-repo
+      uses: actions/checkout@v3
+
+    - name: Set up Go ${{ matrix.go-version }}
+      id: setup-go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Show Go version
+      id: go-version
+      run: |
+        go version
+
+    - name: Install Go Tools
+      id: install-go-tools
+      run: |
+        go install github.com/client9/misspell/cmd/misspell@latest
+        go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+        go install github.com/go-critic/go-critic/cmd/gocritic@latest
+        go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+        go install github.com/gordonklaus/ineffassign@latest
+        go install github.com/mgechev/revive@latest
+        go install github.com/rakyll/gotest@latest
+        go install github.com/securego/gosec/v2/cmd/gosec@latest
+        go install golang.org/x/lint/golint@latest
+        go install golang.org/x/tools/cmd/cover@latest
+
+    - name: Analysing the code with golint
+      id: golint
+      run: |
+        golint -set_exit_status ./...
+
+    - name: Testing with revive
+      id: go-test-revive
+      run: |
+        revive ./...
+
+    - name: Analysing the code with go vet
+      id: go-vet
+      run: |
+        go vet ./...
+
+    - name: Testing with gotest
+      id: go-test-run
+      run: |
+        gotest -v -covermode=count -coverprofile .coverage.out ./...
+
+    - name: Testing with go test coverage
+      id: go-test-coverage
+      run: |
+        go tool cover -func=.coverage.out
+
+    - name: Testing with gosec
+      id: go-test-security
+      run: |
+        gosec ./...
+
+    - name: Testing with misspell
+      id: go-test-misspell
+      run: |
+        misspell -error .
+
+    - name: Testing with ineffassign
+      id: go-test-ineffassign
+      run: |
+        ineffassign ./...
+
+    - name: Testing with gocritic
+      id: go-test-gocritic
+      run: |
+        gocritic check -enableAll ./...
+
+    - name: Testing with golangci-lint
+      id: go-test-golangci-lint
+      run: |
+        golangci-lint --verbose run ./...
