@@ -27,11 +27,15 @@ func (this *score) rate() int {
 
 type quizData [][]string
 
-func RunApp() {
-	fmt.Println("quiz app")
+func showBanner() {
+	fmt.Println(metadata.name + " Version " + metadata.version)
 	fmt.Println()
+}
 
+func RunApp() {
 	c := setup()
+
+	showBanner()
 
 	data := loadData(c)
 
@@ -48,7 +52,13 @@ func setup() config {
 	csvFileName := flag.String("csv", defaults.fileName, "a csv file in the format of 'question,answwer'")
 	timeLimit := flag.Int("limit", defaults.timeLimit, "the time limit for the quiz in seconds")
 	shuffle := flag.Bool("shuffle", defaults.shuffle, "shuffle the questions")
+	version := flag.Bool("version", false, "show the app version")
 	flag.Parse()
+
+	if *version {
+		showVersion()
+		Exit(0, "")
+	}
 
 	return config{
 		fileName:  *csvFileName,
@@ -66,7 +76,7 @@ func shuffleData(data quizData) {
 func loadData(c config) quizData {
 	file, err := os.Open(c.fileName)
 	if err != nil {
-		Exit(fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
+		Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
 	}
 
 	defer file.Close()
@@ -75,7 +85,7 @@ func loadData(c config) quizData {
 
 	lines, err := r.ReadAll()
 	if err != nil {
-		Exit(fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
+		Exit(1, fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
 	}
 
 	if c.shuffle {
@@ -117,7 +127,6 @@ func runQuiz(c config, problems []problem, timer *time.Timer) score {
 		select {
 		case <-timer.C:
 			fmt.Println()
-			fmt.Println()
 			fmt.Println("Time's up!")
 			return s
 		case response := <-answerCh:
@@ -150,7 +159,7 @@ func createTimer(c config) *time.Timer {
 	return timer
 }
 
-func Exit(msg string) {
+func Exit(code int, msg string) {
 	fmt.Println(msg)
-	os.Exit(1)
+	os.Exit(code)
 }
