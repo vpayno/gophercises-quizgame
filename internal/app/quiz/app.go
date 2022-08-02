@@ -21,8 +21,8 @@ type score struct {
 	max    int
 }
 
-func (this *score) rate() int {
-	return int(math.Round(float64(this.points) / float64(this.max) * 100))
+func (s *score) rate() int {
+	return int(math.Round(float64(s.points) / float64(s.max) * 100))
 }
 
 type quizData [][]string
@@ -32,6 +32,7 @@ func showBanner() {
 	fmt.Println()
 }
 
+// RunApp is called my the main function. It's basically the main function of the app.
 func RunApp() {
 	c := setup()
 
@@ -157,9 +158,4 @@ func showScore(s score) {
 func createTimer(c config) *time.Timer {
 	timer := time.NewTimer(time.Duration(c.timeLimit) * time.Second)
 	return timer
-}
-
-func Exit(code int, msg string) {
-	fmt.Println(msg)
-	os.Exit(code)
 }
