@@ -1,0 +1,16 @@
+name: Git Workflow
+
+on: [pull_request]
+
+jobs:
+  block-fixup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repo
+      id: checkout-repo
+      uses: actions/checkout@v3
+
+    - name: Block Fixup Commit Merge
+      id: block-if-contains-fixups
+      uses: 13rac1/block-fixup-merge-action@v2.0.0
