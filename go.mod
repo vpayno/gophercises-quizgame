@@ -1,3 +1,3 @@
-module github.com/vpayno/gophercises-quizgame/v2
+module github.com/vpayno/gophercises-quizgame
 
 go 1.18

@@ -15,7 +15,7 @@
 For `tag`, use `main`, `latest` or a tagged version.
 
 ```
-$ go install github.com/vpayno/gophercises-quizgame/v2/cmd/quiz@tag
+$ go install github.com/vpayno/gophercises-quizgame/cmd/quiz@tag
 ```
 
 ## Usage

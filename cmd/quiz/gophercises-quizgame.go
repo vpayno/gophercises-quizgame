@@ -1,7 +1,7 @@
 package main
 
 import (
-	app "github.com/vpayno/gophercises-quizgame/v2/internal/app/quiz"
+	app "github.com/vpayno/gophercises-quizgame/internal/app/quiz"
 )
 
 var version string
