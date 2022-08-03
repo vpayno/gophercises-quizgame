@@ -1,5 +1,6 @@
 [![Go Workflow](https://github.com/vpayno/gophercises-quizgame/actions/workflows/go.yml/badge.svg)](https://github.com/vpayno/gophercises-quizgame/actions/workflows/go.yml)
 [![Bash Workflow](https://github.com/vpayno/gophercises-quizgame/actions/workflows/bash.yml/badge.svg)](https://github.com/vpayno/gophercises-quizgame/actions/workflows/bash.yml)
+[![Git Workflow](https://github.com/vpayno/gophercises-quizgame/actions/workflows/git.yml/badge.svg)](https://github.com/vpayno/gophercises-quizgame/actions/workflows/git.yml)
 
 # Gophercises Quiz Game Implementation
 
