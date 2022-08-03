@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>quiz: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go (49.2%)</option>
+				
+				<option value="file1">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package app
+
+import (
+        "encoding/csv"
+        "flag"
+        "fmt"
+        "math"
+        math_rand "math/rand"
+        "os"
+        "strings"
+        "time"
+)
+
+type problem struct {
+        question string
+        answer   string
+}
+
+type score struct {
+        points int
+        max    int
+}
+
+func (s *score) rate() int <span class="cov3" title="2">{
+        return int(math.Round(float64(s.points) / float64(s.max) * 100))
+}</span>
+
+type quizData [][]string
+
+func showBanner() <span class="cov1" title="1">{
+        fmt.Println(metadata.name + " Version " + metadata.version)
+        fmt.Println()
+}</span>
+
+// RunApp is called my the main function. It's basically the main function of the app.
+func RunApp() <span class="cov0" title="0">{
+        c := setup()
+
+        showBanner()
+
+        data := loadData(c)
+
+        problems := parseLines(data)
+
+        timer := createTimer(c)
+
+        result := runQuiz(c, problems, timer)
+
+        showScore(result)
+}</span>
+
+func setup() config <span class="cov3" title="2">{
+        csvFileName := flag.String("csv", defaults.fileName, "a csv file in the format of 'question,answwer'")
+        timeLimit := flag.Int("limit", defaults.timeLimit, "the time limit for the quiz in seconds")
+        shuffle := flag.Bool("shuffle", defaults.shuffle, "shuffle the questions")
+        version := flag.Bool("version", false, "show the app version")
+        flag.Parse()
+
+        if *version </span><span class="cov1" title="1">{
+                showVersion()
+                Exit(0, "")
+        }</span>
+
+        <span class="cov3" title="2">return config{
+                fileName:  *csvFileName,
+                timeLimit: *timeLimit,
+                shuffle:   *shuffle,
+        }</span>
+}
+
+func shuffleData(data quizData) <span class="cov1" title="1">{
+        math_rand.Shuffle(len(data), func(i, j int) </span><span class="cov6" title="4">{
+                data[i], data[j] = data[j], data[i]
+        }</span>)
+}
+
+func loadData(c config) quizData <span class="cov3" title="2">{
+        file, err := os.Open(c.fileName)
+        if err != nil </span><span class="cov0" title="0">{
+                Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
+        }</span>
+
+        <span class="cov3" title="2">defer func() </span><span class="cov3" title="2">{
+                if err := file.Close(); err != nil </span><span class="cov0" title="0">{
+                        fmt.Printf("Error closing file: %s\n", err)
+                }</span>
+        }()
+
+        <span class="cov3" title="2">r := csv.NewReader(file)
+
+        lines, err := r.ReadAll()
+        if err != nil </span><span class="cov0" title="0">{
+                Exit(1, fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
+        }</span>
+
+        <span class="cov3" title="2">if c.shuffle </span><span class="cov0" title="0">{
+                shuffleData(lines)
+        }</span>
+
+        <span class="cov3" title="2">return lines</span>
+}
+
+func parseLines(lines quizData) []problem <span class="cov1" title="1">{
+        result := make([]problem, len(lines))
+
+        for i, line := range lines </span><span class="cov10" title="12">{
+                result[i] = problem{
+                        question: strings.TrimSpace(line[0]),
+                        answer:   strings.TrimSpace(line[1]),
+                }
+        }</span>
+
+        <span class="cov1" title="1">return result</span>
+}
+
+func runQuiz(c config, problems []problem, timer *time.Timer) score <span class="cov0" title="0">{
+        s := score{
+                points: 0,
+                max:    len(problems),
+        }
+
+        fmt.Println()
+        fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
+        fmt.Println()
+
+        for i, p := range problems </span><span class="cov0" title="0">{
+                answerCh := make(chan bool)
+                go func() </span><span class="cov0" title="0">{
+                        answerCh &lt;- askQuestion(i, p)
+                }</span>()
+
+                <span class="cov0" title="0">select </span>{
+                case &lt;-timer.C:<span class="cov0" title="0">
+                        fmt.Println()
+                        fmt.Println("Time's up!")
+                        return s</span>
+                case response := &lt;-answerCh:<span class="cov0" title="0">
+                        if response </span><span class="cov0" title="0">{
+                                s.points++
+                        }</span>
+                }
+        }
+
+        <span class="cov0" title="0">return s</span>
+}
+
+func askQuestion(i int, p problem) bool <span class="cov0" title="0">{
+        for </span><span class="cov0" title="0">{
+                fmt.Printf("%d) %s = ", i+1, p.question)
+
+                var response string
+                count, err := fmt.Scanf("%s", &amp;response)
+
+                if count == 1 &amp;&amp; err == nil </span><span class="cov0" title="0">{
+                        return response == p.answer
+                }</span>
+
+                <span class="cov0" title="0">fmt.Println("error enountered, restarting question")</span>
+        }
+}
+
+func showScore(s score) <span class="cov1" title="1">{
+        fmt.Println()
+        fmt.Printf("You scored %d out of %d points (%v%%).\n", s.points, s.max, s.rate())
+        fmt.Println()
+}</span>
+
+func createTimer(c config) *time.Timer <span class="cov1" title="1">{
+        timer := time.NewTimer(time.Duration(c.timeLimit) * time.Second)
+        return timer
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package app
+
+import (
+        crypto_rand "crypto/rand"
+        "encoding/binary"
+        "fmt"
+        math_rand "math/rand"
+        "os"
+)
+
+type appInfo struct {
+        name       string
+        version    string
+        gitVersion string
+        gitHash    string
+        buildTime  string
+}
+
+var metadata = appInfo{
+        name:       "Gophercise Quiz App",
+        version:    "0.0.0",
+        gitVersion: "0.0.0",
+        gitHash:    "abcdef",
+        buildTime:  "1970-01-01T12:00:00Z",
+}
+
+type config struct {
+        fileName  string
+        timeLimit int
+        shuffle   bool
+}
+
+var defaults = config{
+        fileName:  "./data/problems.csv",
+        timeLimit: 30,
+        shuffle:   false,
+}
+
+// SetVersion is used my the main package to pass version information to the app package.
+func SetVersion(slice ...string) <span class="cov1" title="1">{
+        if slice[0] != "" </span><span class="cov1" title="1">{
+                metadata.version = slice[0]
+        }</span>
+        <span class="cov1" title="1">if slice[1] != "" </span><span class="cov1" title="1">{
+                metadata.gitVersion = slice[1]
+        }</span>
+        <span class="cov1" title="1">if slice[2] != "" </span><span class="cov1" title="1">{
+                metadata.gitHash = slice[2]
+        }</span>
+        <span class="cov1" title="1">if slice[3] != "" </span><span class="cov1" title="1">{
+                metadata.buildTime = slice[3]
+        }</span>
+}
+
+func showVersion() <span class="cov6" title="2">{
+        fmt.Println()
+        fmt.Printf("%s Version: %s\n", metadata.name, metadata.version)
+        fmt.Printf("git version: %s\n", metadata.gitVersion)
+        fmt.Printf("   git hash: %s\n", metadata.gitHash)
+        fmt.Printf(" build time: %s\n", metadata.buildTime)
+        fmt.Println()
+}</span>
+
+// InitRandSeed seeds the random number library.
+// Pass -1 to auto-generate a seed. Pass true to enable "debuging" output.
+// This is better than just calling: `rand.Seed(time.Now().UnixNano())`
+func InitRandSeed(seed int64, debug bool) <span class="cov10" title="3">{
+        var b [8]byte
+
+        _, err := crypto_rand.Read(b[:])
+        if err != nil </span><span class="cov0" title="0">{
+                panic("cannot seed math/rand package with cryptographically secure random number generator")</span>
+        }
+
+        <span class="cov10" title="3">if seed == -1 </span><span class="cov1" title="1">{
+                seed = int64(binary.LittleEndian.Uint64(b[:]))
+        }</span>
+
+        <span class="cov10" title="3">math_rand.Seed(seed)
+
+        if debug </span><span class="cov6" title="2">{
+                fmt.Printf("setting seed to: %d\n", seed)
+                fmt.Println(math_rand.Perm(10))
+        }</span>
+}
+
+// OSExit is used to Money Patch the Exit function during testing.
+var OSExit = os.Exit
+
+// Exit is used to prematurely end the application with an exit code and message to stdout.
+func Exit(code int, msg string) <span class="cov6" title="2">{
+        fmt.Println(msg)
+        OSExit(code)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

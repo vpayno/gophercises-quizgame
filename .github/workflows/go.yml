@@ -69,7 +69,7 @@ jobs:
     - name: Testing with gotest
       id: go-test-run
       run: |
-        gotest -v -covermode=count -coverprofile .coverage.out ./...
+        gotest -v -covermode=count -coverprofile=.coverage.out ./...
 
     - name: Testing with go test coverage
       id: go-test-coverage

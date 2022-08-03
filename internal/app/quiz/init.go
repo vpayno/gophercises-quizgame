@@ -62,8 +62,9 @@ func showVersion() {
 }
 
 // InitRandSeed seeds the random number library.
+// Pass -1 to auto-generate a seed. Pass true to enable "debuging" output.
 // This is better than just calling: `rand.Seed(time.Now().UnixNano())`
-func InitRandSeed() {
+func InitRandSeed(seed int64, debug bool) {
 	var b [8]byte
 
 	_, err := crypto_rand.Read(b[:])
@@ -71,11 +72,23 @@ func InitRandSeed() {
 		panic("cannot seed math/rand package with cryptographically secure random number generator")
 	}
 
-	math_rand.Seed(int64(binary.LittleEndian.Uint64(b[:])))
+	if seed == -1 {
+		seed = int64(binary.LittleEndian.Uint64(b[:]))
+	}
+
+	math_rand.Seed(seed)
+
+	if debug {
+		fmt.Printf("setting seed to: %d\n", seed)
+		fmt.Println(math_rand.Perm(10))
+	}
 }
+
+// OSExit is used to Money Patch the Exit function during testing.
+var OSExit = os.Exit
 
 // Exit is used to prematurely end the application with an exit code and message to stdout.
 func Exit(code int, msg string) {
 	fmt.Println(msg)
-	os.Exit(code)
+	OSExit(code)
 }
