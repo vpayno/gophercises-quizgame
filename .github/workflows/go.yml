@@ -3,6 +3,9 @@ name: Go Workflow
 on:
   pull_request:
 
+env:
+  REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build:
     strategy:
@@ -41,6 +44,7 @@ jobs:
         go install github.com/go-critic/go-critic/cmd/gocritic@latest
         go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
         go install github.com/gordonklaus/ineffassign@latest
+        go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
         go install github.com/mgechev/revive@latest
         go install github.com/rakyll/gotest@latest
         go install github.com/securego/gosec/v2/cmd/gosec@latest
@@ -50,17 +54,17 @@ jobs:
     - name: Analysing the code with golint
       id: golint
       run: |
-        golint -set_exit_status ./...
+        golint -set_exit_status ./... | reviewdog -efm="%f:%l:%c: %m" -name="golint" -reporter=github-pr-check
 
     - name: Testing with revive
       id: go-test-revive
       run: |
-        revive ./...
+        revive ./... | reviewdog -efm="%f:%l:%c: %m" -name="revive" -reporter=github-pr-check
 
     - name: Analysing the code with go vet
       id: go-vet
       run: |
-        go vet ./...
+        go vet ./... | reviewdog -efm="%f:%l:%c: %m" -name="go vet" -reporter=github-pr-check
 
     - name: Testing with gotest
       id: go-test-run
@@ -75,24 +79,24 @@ jobs:
     - name: Testing with gosec
       id: go-test-security
       run: |
-        gosec ./...
+        gosec ./... | reviewdog -efm="%f:%l:%c: %m" -name="gosec" -reporter=github-pr-check
 
     - name: Testing with misspell
       id: go-test-misspell
       run: |
-        misspell -error .
+        misspell -error . | reviewdog -efm="%f:%l:%c: %m" -name="misspell" -reporter=github-pr-check
 
     - name: Testing with ineffassign
       id: go-test-ineffassign
       run: |
-        ineffassign ./...
+        ineffassign ./... | reviewdog -efm="%f:%l:%c: %m" -name="ineffassign" -reporter=github-pr-check
 
     - name: Testing with gocritic
       id: go-test-gocritic
       run: |
-        gocritic check -enableAll ./...
+        gocritic check -enableAll ./... | reviewdog -efm="%f:%l:%c: %m" -name="gocritic" -reporter=github-pr-check
 
     - name: Testing with golangci-lint
       id: go-test-golangci-lint
       run: |
-        golangci-lint --verbose run ./...
+        golangci-lint --verbose run ./... | reviewdog -efm="%f:%l:%c: %m" -name="golangci-lint" -reporter=github-pr-check
