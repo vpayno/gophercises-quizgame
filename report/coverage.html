@@ -247,7 +247,7 @@ func showScore(s score) <span class="cov1" title="1">{
         fmt.Println()
 }</span>
 
-func createTimer(c config) *time.Timer <span class="cov1" title="1">{
+func createTimer(c config) *time.Timer <span class="cov3" title="2">{
         timer := time.NewTimer(time.Duration(c.timeLimit) * time.Second)
         return timer
 }</span>

@@ -44,7 +44,10 @@ func TestExit(t *testing.T) {
 	writer.Close()
 
 	var buf bytes.Buffer
-	io.Copy(&buf, testStdout)
+	_, err = io.Copy(&buf, testStdout)
+	if err != nil {
+		t.Error(fmt.Sprint(err))
+	}
 	got := buf.String()
 	if got != want {
 		t.Errorf("Exit(); want %q, got %q", want, got)
@@ -80,7 +83,10 @@ func TestShowVersion(t *testing.T) {
 	writer.Close()
 
 	var buf bytes.Buffer
-	io.Copy(&buf, testStdout)
+	_, err = io.Copy(&buf, testStdout)
+	if err != nil {
+		t.Error(fmt.Sprint(err))
+	}
 	got := buf.String()
 	if got != want {
 		t.Errorf("showBanner(); want %q, got %q", want, got)
@@ -111,7 +117,10 @@ func TestShowBanner(t *testing.T) {
 	writer.Close()
 
 	var buf bytes.Buffer
-	io.Copy(&buf, testStdout)
+	_, err = io.Copy(&buf, testStdout)
+	if err != nil {
+		t.Error(fmt.Sprint(err))
+	}
 	got := buf.String()
 	if got != want {
 		t.Errorf("showBanner(); want %q, got %q", want, got)
@@ -146,7 +155,10 @@ func TestShowScore(t *testing.T) {
 	writer.Close()
 
 	var buf bytes.Buffer
-	io.Copy(&buf, testStdout)
+	_, err = io.Copy(&buf, testStdout)
+	if err != nil {
+		t.Error(fmt.Sprint(err))
+	}
 	got := buf.String()
 	if got != want {
 		t.Errorf("showBanner(); want %q, got %q", want, got)
@@ -368,7 +380,10 @@ func TestSetupFlagVersion(t *testing.T) {
 	writer.Close()
 
 	var buf bytes.Buffer
-	io.Copy(&buf, testStdout)
+	_, err = io.Copy(&buf, testStdout)
+	if err != nil {
+		t.Error(fmt.Sprint(err))
+	}
 	got := buf.String()
 	if got != want {
 		t.Errorf("Exit(); want %q, got %q", want, got)
