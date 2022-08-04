@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 /*
@@ -152,7 +154,7 @@ func TestShuffleData(t *testing.T) {
 
 func TestLoadData(t *testing.T) {
 	c := config{
-		fileName: "../../../test/data/problems.csv",
+		fileName: "../../../test/data/problems-12of12.csv",
 	}
 
 	data := loadData(c)
@@ -168,9 +170,53 @@ func TestLoadData(t *testing.T) {
 	}
 }
 
+func TestLoadDataMissingFileAndInvalidData(t *testing.T) {
+	c := config{
+		fileName: "../../../test/data/does_not_exist.csv",
+		shuffle:  true,
+	}
+
+	want := "Failed to open the CSV file: \"" + c.fileName + "\"\n\n"
+	want += "Failed to parse the provided CSV file: \"" + c.fileName + "\"\n\n"
+	want += "Error closing file: invalid argument\n"
+
+	testStdout, writer, err := os.Pipe()
+	if err != nil {
+		t.Errorf("os.Pipe() err %v; want %v", err, nil)
+	}
+
+	osStdout := os.Stdout // keep backup of the real stdout
+	os.Stdout = writer
+
+	defer func() {
+		// Undo what we changed when this test is done.
+		os.Stdout = osStdout
+	}()
+
+	OSExitBackup := OSExit
+	OSExit = func(code int) { _ = code }
+	// It's not going to exit, it will return a value we don't want.
+	data := loadData(c)
+	OSExit = OSExitBackup
+
+	// Stop capturing stdout.
+	writer.Close()
+
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, testStdout)
+	if err != nil {
+		t.Error(fmt.Sprint(err))
+	}
+	got := buf.String()
+	if got != want {
+		t.Errorf("Exit(); want %q, got %q", want, got)
+	}
+	assert.Equal(t, len(data), 0)
+}
+
 func TestParseLines(t *testing.T) {
 	c := config{
-		fileName: "../../../test/data/problems.csv",
+		fileName: "../../../test/data/problems-12of12.csv",
 	}
 
 	data := loadData(c)
@@ -268,4 +314,67 @@ func TestSetupFlagVersion(t *testing.T) {
 	}
 
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError) // flags are now reset
+}
+
+func TestAskQuestion(t *testing.T) {
+	var stdin bytes.Buffer
+
+	p := problem{
+		question: "100+23",
+		answer:   "123",
+	}
+
+	want := true
+
+	bytes := []byte(p.answer)
+	bytes = append(bytes, '\n')
+	size, err := stdin.Write(bytes)
+
+	got := askQuestion(0, p, &stdin)
+
+	assert.NoError(t, err) // Yes, stdin.Write() always returns nil for error. It panics when it encounters an error.
+	assert.Equal(t, len(p.answer+"\n"), size)
+	assert.Equal(t, want, got)
+}
+
+func TestRunQuiz(t *testing.T) {
+	var stdin bytes.Buffer
+
+	c := config{
+		fileName:  "../../../test/data/problems-1of1.csv",
+		timeLimit: 1,
+	}
+
+	// tested in TestLoadData, assuming it's good
+	data := loadData(c)
+
+	// tested in TestParseLines, assuming it's good
+	problems := parseLines(data)
+
+	// tested in TestTimer, assuming it's good
+	timer := createTimer(c)
+
+	// Create our input stream.
+	var answers string
+	for _, p := range problems {
+		answers += p.answer + "\n"
+	}
+	bytes := []byte(answers)
+	size, err := stdin.Write(bytes)
+	assert.NoError(t, err)
+	assert.Equal(t, len(answers), size)
+
+	want := score{
+		points: len(problems),
+		max:    len(problems),
+	}
+
+	got := runQuiz(c, problems, timer, &stdin)
+
+	assert.Equal(t, want.points, got.points)
+	assert.Equal(t, want.max, got.max)
+	assert.Equal(t, want.rate(), got.rate())
+}
+
+func TestRunApp(t *testing.T) {
 }

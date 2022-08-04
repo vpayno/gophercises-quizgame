@@ -1,9 +1,11 @@
 package app
 
 import (
+	"bufio"
 	"encoding/csv"
 	"flag"
 	"fmt"
+	"io"
 	"math"
 	math_rand "math/rand"
 	"os"
@@ -44,7 +46,7 @@ func RunApp() {
 
 	timer := createTimer(c)
 
-	result := runQuiz(c, problems, timer)
+	result := runQuiz(c, problems, timer, os.Stdin)
 
 	showScore(result)
 }
@@ -113,7 +115,7 @@ func parseLines(lines quizData) []problem {
 	return result
 }
 
-func runQuiz(c config, problems []problem, timer *time.Timer) score {
+func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score {
 	s := score{
 		points: 0,
 		max:    len(problems),
@@ -126,7 +128,7 @@ func runQuiz(c config, problems []problem, timer *time.Timer) score {
 	for i, p := range problems {
 		answerCh := make(chan bool)
 		go func() {
-			answerCh <- askQuestion(i, p)
+			answerCh <- askQuestion(i, p, stdin)
 		}()
 
 		select {
@@ -144,18 +146,22 @@ func runQuiz(c config, problems []problem, timer *time.Timer) score {
 	return s
 }
 
-func askQuestion(i int, p problem) bool {
+func askQuestion(i int, p problem, stdin io.Reader) bool {
+	reader := bufio.NewReader(stdin)
+
 	for {
 		fmt.Printf("%d) %s = ", i+1, p.question)
 
-		var response string
-		count, err := fmt.Scanf("%s", &response)
+		response, err := reader.ReadString('\n')
 
-		if count == 1 && err == nil {
+		// During tests, we need to trim the trailing newline char.
+		response = strings.TrimSuffix(response, "\n")
+
+		if err == nil {
 			return response == p.answer
 		}
 
-		fmt.Println("error enountered, restarting question")
+		fmt.Println("error enountered, restarting question.", err)
 	}
 }
 

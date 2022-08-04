@@ -55,9 +55,11 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go (49.2%)</option>
+				<option value="file0">github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go (66.7%)</option>
 				
-				<option value="file1">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.2%)</option>
+				<option value="file1">github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go (83.3%)</option>
+				
+				<option value="file2">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.2%)</option>
 				
 				</select>
 			</div>
@@ -80,12 +82,35 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package app
+		<pre class="file" id="file0" style="display: none">package main
 
 import (
+        app "github.com/vpayno/gophercises-quizgame/internal/app/quiz"
+)
+
+var version string
+var gitVersion string
+var gitHash string
+var buildTime string
+
+func init() <span class="cov8" title="1">{
+        app.InitRandSeed(-1, false)
+        app.SetVersion(version, gitVersion, gitHash, buildTime)
+}</span>
+
+func main() <span class="cov0" title="0">{
+        app.RunApp()
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package app
+
+import (
+        "bufio"
         "encoding/csv"
         "flag"
         "fmt"
+        "io"
         "math"
         math_rand "math/rand"
         "os"
@@ -103,7 +128,7 @@ type score struct {
         max    int
 }
 
-func (s *score) rate() int <span class="cov3" title="2">{
+func (s *score) rate() int <span class="cov5" title="4">{
         return int(math.Round(float64(s.points) / float64(s.max) * 100))
 }</span>
 
@@ -126,7 +151,7 @@ func RunApp() <span class="cov0" title="0">{
 
         timer := createTimer(c)
 
-        result := runQuiz(c, problems, timer)
+        result := runQuiz(c, problems, timer, os.Stdin)
 
         showScore(result)
 }</span>
@@ -150,52 +175,52 @@ func setup() config <span class="cov3" title="2">{
         }</span>
 }
 
-func shuffleData(data quizData) <span class="cov1" title="1">{
-        math_rand.Shuffle(len(data), func(i, j int) </span><span class="cov6" title="4">{
+func shuffleData(data quizData) <span class="cov3" title="2">{
+        math_rand.Shuffle(len(data), func(i, j int) </span><span class="cov5" title="4">{
                 data[i], data[j] = data[j], data[i]
         }</span>)
 }
 
-func loadData(c config) quizData <span class="cov3" title="2">{
+func loadData(c config) quizData <span class="cov5" title="4">{
         file, err := os.Open(c.fileName)
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov1" title="1">{
                 Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
         }</span>
 
-        <span class="cov3" title="2">defer func() </span><span class="cov3" title="2">{
-                if err := file.Close(); err != nil </span><span class="cov0" title="0">{
+        <span class="cov5" title="4">defer func() </span><span class="cov5" title="4">{
+                if err := file.Close(); err != nil </span><span class="cov1" title="1">{
                         fmt.Printf("Error closing file: %s\n", err)
                 }</span>
         }()
 
-        <span class="cov3" title="2">r := csv.NewReader(file)
+        <span class="cov5" title="4">r := csv.NewReader(file)
 
         lines, err := r.ReadAll()
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov1" title="1">{
                 Exit(1, fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
         }</span>
 
-        <span class="cov3" title="2">if c.shuffle </span><span class="cov0" title="0">{
+        <span class="cov5" title="4">if c.shuffle </span><span class="cov1" title="1">{
                 shuffleData(lines)
         }</span>
 
-        <span class="cov3" title="2">return lines</span>
+        <span class="cov5" title="4">return lines</span>
 }
 
-func parseLines(lines quizData) []problem <span class="cov1" title="1">{
+func parseLines(lines quizData) []problem <span class="cov3" title="2">{
         result := make([]problem, len(lines))
 
-        for i, line := range lines </span><span class="cov10" title="12">{
+        for i, line := range lines </span><span class="cov10" title="13">{
                 result[i] = problem{
                         question: strings.TrimSpace(line[0]),
                         answer:   strings.TrimSpace(line[1]),
                 }
         }</span>
 
-        <span class="cov1" title="1">return result</span>
+        <span class="cov3" title="2">return result</span>
 }
 
-func runQuiz(c config, problems []problem, timer *time.Timer) score <span class="cov0" title="0">{
+func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score <span class="cov1" title="1">{
         s := score{
                 points: 0,
                 max:    len(problems),
@@ -205,39 +230,43 @@ func runQuiz(c config, problems []problem, timer *time.Timer) score <span class=
         fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
         fmt.Println()
 
-        for i, p := range problems </span><span class="cov0" title="0">{
+        for i, p := range problems </span><span class="cov1" title="1">{
                 answerCh := make(chan bool)
-                go func() </span><span class="cov0" title="0">{
-                        answerCh &lt;- askQuestion(i, p)
+                go func() </span><span class="cov1" title="1">{
+                        answerCh &lt;- askQuestion(i, p, stdin)
                 }</span>()
 
-                <span class="cov0" title="0">select </span>{
+                <span class="cov1" title="1">select </span>{
                 case &lt;-timer.C:<span class="cov0" title="0">
                         fmt.Println()
                         fmt.Println("Time's up!")
                         return s</span>
-                case response := &lt;-answerCh:<span class="cov0" title="0">
-                        if response </span><span class="cov0" title="0">{
+                case response := &lt;-answerCh:<span class="cov1" title="1">
+                        if response </span><span class="cov1" title="1">{
                                 s.points++
                         }</span>
                 }
         }
 
-        <span class="cov0" title="0">return s</span>
+        <span class="cov1" title="1">return s</span>
 }
 
-func askQuestion(i int, p problem) bool <span class="cov0" title="0">{
-        for </span><span class="cov0" title="0">{
+func askQuestion(i int, p problem, stdin io.Reader) bool <span class="cov3" title="2">{
+        reader := bufio.NewReader(stdin)
+
+        for </span><span class="cov3" title="2">{
                 fmt.Printf("%d) %s = ", i+1, p.question)
 
-                var response string
-                count, err := fmt.Scanf("%s", &amp;response)
+                response, err := reader.ReadString('\n')
 
-                if count == 1 &amp;&amp; err == nil </span><span class="cov0" title="0">{
+                // During tests, we need to trim the trailing newline char.
+                response = strings.TrimSuffix(response, "\n")
+
+                if err == nil </span><span class="cov3" title="2">{
                         return response == p.answer
                 }</span>
 
-                <span class="cov0" title="0">fmt.Println("error enountered, restarting question")</span>
+                <span class="cov0" title="0">fmt.Println("error enountered, restarting question.", err)</span>
         }
 }
 
@@ -247,13 +276,13 @@ func showScore(s score) <span class="cov1" title="1">{
         fmt.Println()
 }</span>
 
-func createTimer(c config) *time.Timer <span class="cov3" title="2">{
+func createTimer(c config) *time.Timer <span class="cov4" title="3">{
         timer := time.NewTimer(time.Duration(c.timeLimit) * time.Second)
         return timer
 }</span>
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package app
+		<pre class="file" id="file2" style="display: none">package app
 
 import (
         crypto_rand "crypto/rand"
@@ -307,7 +336,7 @@ func SetVersion(slice ...string) <span class="cov1" title="1">{
         }</span>
 }
 
-func showVersion() <span class="cov6" title="2">{
+func showVersion() <span class="cov5" title="2">{
         fmt.Println()
         fmt.Printf("%s Version: %s\n", metadata.name, metadata.version)
         fmt.Printf("git version: %s\n", metadata.gitVersion)
@@ -319,7 +348,7 @@ func showVersion() <span class="cov6" title="2">{
 // InitRandSeed seeds the random number library.
 // Pass -1 to auto-generate a seed. Pass true to enable "debuging" output.
 // This is better than just calling: `rand.Seed(time.Now().UnixNano())`
-func InitRandSeed(seed int64, debug bool) <span class="cov10" title="3">{
+func InitRandSeed(seed int64, debug bool) <span class="cov8" title="3">{
         var b [8]byte
 
         _, err := crypto_rand.Read(b[:])
@@ -327,13 +356,13 @@ func InitRandSeed(seed int64, debug bool) <span class="cov10" title="3">{
                 panic("cannot seed math/rand package with cryptographically secure random number generator")</span>
         }
 
-        <span class="cov10" title="3">if seed == -1 </span><span class="cov1" title="1">{
+        <span class="cov8" title="3">if seed == -1 </span><span class="cov1" title="1">{
                 seed = int64(binary.LittleEndian.Uint64(b[:]))
         }</span>
 
-        <span class="cov10" title="3">math_rand.Seed(seed)
+        <span class="cov8" title="3">math_rand.Seed(seed)
 
-        if debug </span><span class="cov6" title="2">{
+        if debug </span><span class="cov5" title="2">{
                 fmt.Printf("setting seed to: %d\n", seed)
                 fmt.Println(math_rand.Perm(10))
         }</span>
@@ -343,7 +372,7 @@ func InitRandSeed(seed int64, debug bool) <span class="cov10" title="3">{
 var OSExit = os.Exit
 
 // Exit is used to prematurely end the application with an exit code and message to stdout.
-func Exit(code int, msg string) <span class="cov6" title="2">{
+func Exit(code int, msg string) <span class="cov10" title="4">{
         fmt.Println(msg)
         OSExit(code)
 }</span>

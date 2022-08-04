@@ -4,18 +4,6 @@
 19     	}
 
 
-128     	func() {
-129 MISS				answerCh <- askQuestion(i, p)
-130     			}
-
-
-83     	func() {
-84     			if err := file.Close(); err != nil {
-85 MISS				fmt.Printf("Error closing file: %s\n", err)
-86     			}
-87     		}
-
-
 67     	func InitRandSeed(seed int64, debug bool) {
 68     		var b [8]byte
 69     	
@@ -37,95 +25,72 @@
 85     	}
 
 
-36     	func RunApp() {
-37 MISS		c := setup()
-38     	
-39 MISS		showBanner()
+38     	func RunApp() {
+39 MISS		c := setup()
 40     	
-41 MISS		data := loadData(c)
+41 MISS		showBanner()
 42     	
-43 MISS		problems := parseLines(data)
+43 MISS		data := loadData(c)
 44     	
-45 MISS		timer := createTimer(c)
+45 MISS		problems := parseLines(data)
 46     	
-47 MISS		result := runQuiz(c, problems, timer)
+47 MISS		timer := createTimer(c)
 48     	
-49 MISS		showScore(result)
-50     	}
+49 MISS		result := runQuiz(c, problems, timer, os.Stdin)
+50     	
+51 MISS		showScore(result)
+52     	}
 
 
-147     	func askQuestion(i int, p problem) bool {
-148 MISS		for {
-149 MISS			fmt.Printf("%d) %s = ", i+1, p.question)
-150     	
-151 MISS			var response string
-152 MISS			count, err := fmt.Scanf("%s", &response)
-153     	
-154 MISS			if count == 1 && err == nil {
-155 MISS				return response == p.answer
-156     			}
-157     	
-158 MISS			fmt.Println("error enountered, restarting question")
-159     		}
-160     	}
+149     	func askQuestion(i int, p problem, stdin io.Reader) bool {
+150     		reader := bufio.NewReader(stdin)
+151     	
+152     		for {
+153     			fmt.Printf("%d) %s = ", i+1, p.question)
+154     	
+155     			response, err := reader.ReadString('\n')
+156     	
+157     			// During tests, we need to trim the trailing newline char.
+158     			response = strings.TrimSuffix(response, "\n")
+159     	
+160     			if err == nil {
+161     				return response == p.answer
+162     			}
+163     	
+164 MISS			fmt.Println("error enountered, restarting question.", err)
+165     		}
+166     	}
 
 
- 77     	func loadData(c config) quizData {
- 78     		file, err := os.Open(c.fileName)
- 79     		if err != nil {
- 80 MISS			Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
- 81     		}
- 82     	
- 83     		defer func() {
- 84     			if err := file.Close(); err != nil {
- 85     				fmt.Printf("Error closing file: %s\n", err)
- 86     			}
- 87     		}()
- 88     	
- 89     		r := csv.NewReader(file)
- 90     	
- 91     		lines, err := r.ReadAll()
- 92     		if err != nil {
- 93 MISS			Exit(1, fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
- 94     		}
- 95     	
- 96     		if c.shuffle {
- 97 MISS			shuffleData(lines)
- 98     		}
- 99     	
-100     		return lines
-101     	}
-
-
-116     	func runQuiz(c config, problems []problem, timer *time.Timer) score {
-117 MISS		s := score{
-118     			points: 0,
-119     			max:    len(problems),
-120     		}
-121     	
-122 MISS		fmt.Println()
-123 MISS		fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
-124 MISS		fmt.Println()
-125     	
-126 MISS		for i, p := range problems {
-127 MISS			answerCh := make(chan bool)
-128 MISS			go func() {
-129     				answerCh <- askQuestion(i, p)
-130     			}()
-131     	
-132 MISS			select {
-133     			case <-timer.C:
-134 MISS				fmt.Println()
-135 MISS				fmt.Println("Time's up!")
-136 MISS				return s
-137     			case response := <-answerCh:
-138 MISS				if response {
-139 MISS					s.points++
-140     				}
-141     			}
-142     		}
-143     	
-144 MISS		return s
-145     	}
+118     	func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score {
+119     		s := score{
+120     			points: 0,
+121     			max:    len(problems),
+122     		}
+123     	
+124     		fmt.Println()
+125     		fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
+126     		fmt.Println()
+127     	
+128     		for i, p := range problems {
+129     			answerCh := make(chan bool)
+130     			go func() {
+131     				answerCh <- askQuestion(i, p, stdin)
+132     			}()
+133     	
+134     			select {
+135     			case <-timer.C:
+136 MISS				fmt.Println()
+137 MISS				fmt.Println("Time's up!")
+138 MISS				return s
+139     			case response := <-answerCh:
+140     				if response {
+141     					s.points++
+142     				}
+143     			}
+144     		}
+145     	
+146     		return s
+147     	}
 
 
