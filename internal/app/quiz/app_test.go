@@ -376,5 +376,12 @@ func TestRunQuiz(t *testing.T) {
 	assert.Equal(t, want.rate(), got.rate())
 }
 
+// The functions in RunApp() are already tested. Just running them together with zero test questions.
 func TestRunApp(t *testing.T) {
+	fileName := "../../../test/data/problems-0of0.csv"
+	timeLimit := 1
+
+	os.Args = []string{"test", "-csv", fileName, "-limit", fmt.Sprintf("%d", timeLimit), "-shuffle"}
+
+	RunApp()
 }

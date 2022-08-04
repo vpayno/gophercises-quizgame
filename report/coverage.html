@@ -55,9 +55,9 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go (66.7%)</option>
+				<option value="file0">github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go (100.0%)</option>
 				
-				<option value="file1">github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go (83.3%)</option>
+				<option value="file1">github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go (93.9%)</option>
 				
 				<option value="file2">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.2%)</option>
 				
@@ -98,7 +98,7 @@ func init() <span class="cov8" title="1">{
         app.SetVersion(version, gitVersion, gitHash, buildTime)
 }</span>
 
-func main() <span class="cov0" title="0">{
+func main() <span class="cov8" title="1">{
         app.RunApp()
 }</span>
 </pre>
@@ -128,19 +128,19 @@ type score struct {
         max    int
 }
 
-func (s *score) rate() int <span class="cov5" title="4">{
+func (s *score) rate() int <span class="cov6" title="5">{
         return int(math.Round(float64(s.points) / float64(s.max) * 100))
 }</span>
 
 type quizData [][]string
 
-func showBanner() <span class="cov1" title="1">{
+func showBanner() <span class="cov3" title="2">{
         fmt.Println(metadata.name + " Version " + metadata.version)
         fmt.Println()
 }</span>
 
 // RunApp is called my the main function. It's basically the main function of the app.
-func RunApp() <span class="cov0" title="0">{
+func RunApp() <span class="cov1" title="1">{
         c := setup()
 
         showBanner()
@@ -156,7 +156,7 @@ func RunApp() <span class="cov0" title="0">{
         showScore(result)
 }</span>
 
-func setup() config <span class="cov3" title="2">{
+func setup() config <span class="cov4" title="3">{
         csvFileName := flag.String("csv", defaults.fileName, "a csv file in the format of 'question,answwer'")
         timeLimit := flag.Int("limit", defaults.timeLimit, "the time limit for the quiz in seconds")
         shuffle := flag.Bool("shuffle", defaults.shuffle, "shuffle the questions")
@@ -168,46 +168,46 @@ func setup() config <span class="cov3" title="2">{
                 Exit(0, "")
         }</span>
 
-        <span class="cov3" title="2">return config{
+        <span class="cov4" title="3">return config{
                 fileName:  *csvFileName,
                 timeLimit: *timeLimit,
                 shuffle:   *shuffle,
         }</span>
 }
 
-func shuffleData(data quizData) <span class="cov3" title="2">{
+func shuffleData(data quizData) <span class="cov4" title="3">{
         math_rand.Shuffle(len(data), func(i, j int) </span><span class="cov5" title="4">{
                 data[i], data[j] = data[j], data[i]
         }</span>)
 }
 
-func loadData(c config) quizData <span class="cov5" title="4">{
+func loadData(c config) quizData <span class="cov6" title="5">{
         file, err := os.Open(c.fileName)
         if err != nil </span><span class="cov1" title="1">{
                 Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
         }</span>
 
-        <span class="cov5" title="4">defer func() </span><span class="cov5" title="4">{
+        <span class="cov6" title="5">defer func() </span><span class="cov6" title="5">{
                 if err := file.Close(); err != nil </span><span class="cov1" title="1">{
                         fmt.Printf("Error closing file: %s\n", err)
                 }</span>
         }()
 
-        <span class="cov5" title="4">r := csv.NewReader(file)
+        <span class="cov6" title="5">r := csv.NewReader(file)
 
         lines, err := r.ReadAll()
         if err != nil </span><span class="cov1" title="1">{
                 Exit(1, fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
         }</span>
 
-        <span class="cov5" title="4">if c.shuffle </span><span class="cov1" title="1">{
+        <span class="cov6" title="5">if c.shuffle </span><span class="cov3" title="2">{
                 shuffleData(lines)
         }</span>
 
-        <span class="cov5" title="4">return lines</span>
+        <span class="cov6" title="5">return lines</span>
 }
 
-func parseLines(lines quizData) []problem <span class="cov3" title="2">{
+func parseLines(lines quizData) []problem <span class="cov4" title="3">{
         result := make([]problem, len(lines))
 
         for i, line := range lines </span><span class="cov10" title="13">{
@@ -217,10 +217,10 @@ func parseLines(lines quizData) []problem <span class="cov3" title="2">{
                 }
         }</span>
 
-        <span class="cov3" title="2">return result</span>
+        <span class="cov4" title="3">return result</span>
 }
 
-func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score <span class="cov1" title="1">{
+func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score <span class="cov3" title="2">{
         s := score{
                 points: 0,
                 max:    len(problems),
@@ -248,7 +248,7 @@ func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) s
                 }
         }
 
-        <span class="cov1" title="1">return s</span>
+        <span class="cov3" title="2">return s</span>
 }
 
 func askQuestion(i int, p problem, stdin io.Reader) bool <span class="cov3" title="2">{
@@ -270,13 +270,13 @@ func askQuestion(i int, p problem, stdin io.Reader) bool <span class="cov3" titl
         }
 }
 
-func showScore(s score) <span class="cov1" title="1">{
+func showScore(s score) <span class="cov3" title="2">{
         fmt.Println()
         fmt.Printf("You scored %d out of %d points (%v%%).\n", s.points, s.max, s.rate())
         fmt.Println()
 }</span>
 
-func createTimer(c config) *time.Timer <span class="cov4" title="3">{
+func createTimer(c config) *time.Timer <span class="cov5" title="4">{
         timer := time.NewTimer(time.Duration(c.timeLimit) * time.Second)
         return timer
 }</span>

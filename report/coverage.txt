@@ -1,8 +1,8 @@
 github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go:12:	init		100.0%
-github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go:17:	main		0.0%
+github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go:17:	main		100.0%
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:26:		rate		100.0%
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:32:		showBanner	100.0%
-github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:38:		RunApp		0.0%
+github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:38:		RunApp		100.0%
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:54:		setup		100.0%
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:73:		shuffleData	100.0%
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:79:		loadData	100.0%
@@ -15,4 +15,4 @@ github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go:40:		SetVersion
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go:55:		showVersion	100.0%
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go:67:		InitRandSeed	90.0%
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go:91:		Exit		100.0%
-total:										(statements)	86.3%
+total:										(statements)	94.7%

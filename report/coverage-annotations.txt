@@ -1,9 +1,4 @@
 
-17     	func main() {
-18 MISS		app.RunApp()
-19     	}
-
-
 67     	func InitRandSeed(seed int64, debug bool) {
 68     		var b [8]byte
 69     	
@@ -23,23 +18,6 @@
 83     			fmt.Println(math_rand.Perm(10))
 84     		}
 85     	}
-
-
-38     	func RunApp() {
-39 MISS		c := setup()
-40     	
-41 MISS		showBanner()
-42     	
-43 MISS		data := loadData(c)
-44     	
-45 MISS		problems := parseLines(data)
-46     	
-47 MISS		timer := createTimer(c)
-48     	
-49 MISS		result := runQuiz(c, problems, timer, os.Stdin)
-50     	
-51 MISS		showScore(result)
-52     	}
 
 
 149     	func askQuestion(i int, p problem, stdin io.Reader) bool {
