@@ -1,4 +1,9 @@
 
+17     	func main() {
+18 MISS		app.RunApp()
+19     	}
+
+
 128     	func() {
 129 MISS				answerCh <- askQuestion(i, p)
 130     			}

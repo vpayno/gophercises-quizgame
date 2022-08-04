@@ -1,4 +1,8 @@
 
+github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go	 init	 100.00% (2/2)
+github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go	 main	 0.00% (0/1)
+github.com/vpayno/gophercises-quizgame/cmd/quiz				 ----	 66.67% (2/3)
+
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go	 setup		 100.00% (9/9)
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go SetVersion	 100.00% (8/8)
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go showVersion	 100.00% (6/6)
@@ -19,4 +23,4 @@ github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go	 askQuestion	 0.
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go	 @128:6		 0.00% (0/1)
 github.com/vpayno/gophercises-quizgame/internal/app/quiz	 ------------	 62.64% (57/91)
 
-Total Coverage: 62.64% (57/91)
+Total Coverage: 62.77% (59/94)
