@@ -17,7 +17,7 @@ main()
 	printf "\n" | tee -a report/coverage-annotations.txt
 
 	echo jq . .coverage.json '|' gocov report '|' tee report/coverage-summary.txt
-	time jq . .coverage.json | gocov report | tee -a report/coverage-summary.txt
+	time jq . .coverage.json | gocov report | tee report/coverage-summary.txt
 	printf "\n"
 }
 
