@@ -10,7 +10,7 @@ var gitHash string
 var buildTime string
 
 func init() {
-	app.InitRandSeed()
+	app.InitRandSeed(-1, false)
 	app.SetVersion(version, gitVersion, gitHash, buildTime)
 }
 

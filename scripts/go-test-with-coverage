@@ -1,0 +1,26 @@
+#!/bin/bash
+
+main()
+{
+	echo gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
+	time gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
+	printf "\n"
+
+	mkdir report
+
+	# go install golang.org/x/tools/cmd/cover@latest
+
+	echo go tool cover -html=.coverage.out -o=report/coverage.html
+	time go tool cover -html=.coverage.out -o=report/coverage.html
+	printf "\n"
+
+	echo go tool cover -func=.coverage.out -o=report/coverage.txt
+	time go tool cover -func=.coverage.out -o=report/coverage.txt
+	printf "\n"
+
+	printf "=== ./report/coverage.txt ===\n"
+	cat report/coverage.txt
+	printf "\n"
+}
+
+time main

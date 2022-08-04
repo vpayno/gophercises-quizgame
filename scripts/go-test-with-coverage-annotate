@@ -1,0 +1,24 @@
+#!/bin/bash
+
+main()
+{
+	echo gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
+	time gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
+	printf "\n"
+
+	# go install github.com/axw/gocov/gocov@latest
+
+	echo gocov convert .coverage.out '|' jq --sort-keys . '>' .coverage.json
+	time gocov convert .coverage.out | jq --sort-keys . > .coverage.json
+	printf "\n"
+
+	echo jq . .coverage.json '|' gocov annotate -ceiling 100 - '|' tee report/coverage-annotations.txt
+	time jq . .coverage.json | gocov annotate -ceiling 100 - | tee report/coverage-annotations.txt
+	printf "\n" | tee -a report/coverage-annotations.txt
+
+	echo jq . .coverage.json '|' gocov report '|' tee report/coverage-summary.txt
+	time jq . .coverage.json | gocov report | tee -a report/coverage-summary.txt
+	printf "\n"
+}
+
+time main

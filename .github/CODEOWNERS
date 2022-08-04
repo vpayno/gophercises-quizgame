@@ -1,0 +1,33 @@
+# CODEOWNERS file
+
+# Everything rule.
+*	@vpayno
+
+# GitHub CI assets.
+#.github/	@vpayno
+
+# Git
+#githooks/	@vpayno
+
+# Source code.
+#api/	@vpayno
+#assets/	@vpayno
+#cmd/	@vpayno
+#config/	@vpayno
+#docs/	@vpayno
+#examples/	@vpayno
+#internal/	@vpayno
+#pkg/	@vpayno
+#test/	@vpayno
+#web/	@vpayno
+
+# Deployments
+#deployments	@vpayno
+#dist	@vpayno
+
+# Website.
+#website/	@vpayno
+
+# Build Tools.
+#Makefile	@vpayno
+#scripts/	@vpayno

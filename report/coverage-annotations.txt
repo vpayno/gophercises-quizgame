@@ -1,0 +1,126 @@
+
+128     	func() {
+129 MISS				answerCh <- askQuestion(i, p)
+130     			}
+
+
+83     	func() {
+84     			if err := file.Close(); err != nil {
+85 MISS				fmt.Printf("Error closing file: %s\n", err)
+86     			}
+87     		}
+
+
+67     	func InitRandSeed(seed int64, debug bool) {
+68     		var b [8]byte
+69     	
+70     		_, err := crypto_rand.Read(b[:])
+71     		if err != nil {
+72 MISS			panic("cannot seed math/rand package with cryptographically secure random number generator")
+73     		}
+74     	
+75     		if seed == -1 {
+76     			seed = int64(binary.LittleEndian.Uint64(b[:]))
+77     		}
+78     	
+79     		math_rand.Seed(seed)
+80     	
+81     		if debug {
+82     			fmt.Printf("setting seed to: %d\n", seed)
+83     			fmt.Println(math_rand.Perm(10))
+84     		}
+85     	}
+
+
+36     	func RunApp() {
+37 MISS		c := setup()
+38     	
+39 MISS		showBanner()
+40     	
+41 MISS		data := loadData(c)
+42     	
+43 MISS		problems := parseLines(data)
+44     	
+45 MISS		timer := createTimer(c)
+46     	
+47 MISS		result := runQuiz(c, problems, timer)
+48     	
+49 MISS		showScore(result)
+50     	}
+
+
+147     	func askQuestion(i int, p problem) bool {
+148 MISS		for {
+149 MISS			fmt.Printf("%d) %s = ", i+1, p.question)
+150     	
+151 MISS			var response string
+152 MISS			count, err := fmt.Scanf("%s", &response)
+153     	
+154 MISS			if count == 1 && err == nil {
+155 MISS				return response == p.answer
+156     			}
+157     	
+158 MISS			fmt.Println("error enountered, restarting question")
+159     		}
+160     	}
+
+
+ 77     	func loadData(c config) quizData {
+ 78     		file, err := os.Open(c.fileName)
+ 79     		if err != nil {
+ 80 MISS			Exit(1, fmt.Sprintf("Failed to open the CSV file: %q\n", c.fileName))
+ 81     		}
+ 82     	
+ 83     		defer func() {
+ 84     			if err := file.Close(); err != nil {
+ 85     				fmt.Printf("Error closing file: %s\n", err)
+ 86     			}
+ 87     		}()
+ 88     	
+ 89     		r := csv.NewReader(file)
+ 90     	
+ 91     		lines, err := r.ReadAll()
+ 92     		if err != nil {
+ 93 MISS			Exit(1, fmt.Sprintf("Failed to parse the provided CSV file: %q\n", c.fileName))
+ 94     		}
+ 95     	
+ 96     		if c.shuffle {
+ 97 MISS			shuffleData(lines)
+ 98     		}
+ 99     	
+100     		return lines
+101     	}
+
+
+116     	func runQuiz(c config, problems []problem, timer *time.Timer) score {
+117 MISS		s := score{
+118     			points: 0,
+119     			max:    len(problems),
+120     		}
+121     	
+122 MISS		fmt.Println()
+123 MISS		fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
+124 MISS		fmt.Println()
+125     	
+126 MISS		for i, p := range problems {
+127 MISS			answerCh := make(chan bool)
+128 MISS			go func() {
+129     				answerCh <- askQuestion(i, p)
+130     			}()
+131     	
+132 MISS			select {
+133     			case <-timer.C:
+134 MISS				fmt.Println()
+135 MISS				fmt.Println("Time's up!")
+136 MISS				return s
+137     			case response := <-answerCh:
+138 MISS				if response {
+139 MISS					s.points++
+140     				}
+141     			}
+142     		}
+143     	
+144 MISS		return s
+145     	}
+
+
