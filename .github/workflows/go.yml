@@ -39,14 +39,15 @@ jobs:
     - name: Install Go Tools
       id: install-go-tools
       run: |
+        go install github.com/axw/gocov/gocov@latest
         go install github.com/client9/misspell/cmd/misspell@latest
         go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
         go install github.com/go-critic/go-critic/cmd/gocritic@latest
         go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
         go install github.com/gordonklaus/ineffassign@latest
-        go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
         go install github.com/mgechev/revive@latest
         go install github.com/rakyll/gotest@latest
+        go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
         go install github.com/securego/gosec/v2/cmd/gosec@latest
         go install golang.org/x/lint/golint@latest
         go install golang.org/x/tools/cmd/cover@latest
@@ -71,10 +72,20 @@ jobs:
       run: |
         gotest -v -covermode=count -coverprofile=.coverage.out ./...
 
-    - name: Testing with go test coverage
+    - name: Test Coverage Report
       id: go-test-coverage
       run: |
         go tool cover -func=.coverage.out
+
+    - name: Show Missing Coverage
+      id: go-test-coverage-annotate
+      run: |
+        gocov convert .coverage.out | gocov annotate -ceiling=100 -color -
+
+    - name: gocov Coverage Report
+      id: go-test-coverage-report
+      run: |
+        gocov convert .coverage.out | gocov report
 
     - name: Testing with gosec
       id: go-test-security
@@ -99,4 +110,4 @@ jobs:
     - name: Testing with golangci-lint
       id: go-test-golangci-lint
       run: |
-        golangci-lint --verbose run ./... | reviewdog -efm="%f:%l:%c: %m" -name="golangci-lint" -reporter=github-pr-check
+        golangci-lint run --out-format line-number ./... | reviewdog -f=golangci-lint -name="golangci-lint" -filter-mode=added -reporter=github-pr-check
