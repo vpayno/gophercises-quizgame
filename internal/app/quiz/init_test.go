@@ -102,8 +102,8 @@ func TestSetVersion(t *testing.T) {
 	}
 
 	strSlice := []string{want.version, want.gitVersion, want.gitHash, want.buildTime}
-	bytes := []byte(strings.Join(strSlice, "\n") + "\n")
-	SetVersion(bytes)
+	b := []byte(strings.Join(strSlice, "\n") + "\n")
+	SetVersion(b)
 
 	got := metadata
 

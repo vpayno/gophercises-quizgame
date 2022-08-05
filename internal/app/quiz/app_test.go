@@ -326,9 +326,9 @@ func TestAskQuestion(t *testing.T) {
 
 	want := true
 
-	bytes := []byte(p.answer)
-	bytes = append(bytes, '\n')
-	size, err := stdin.Write(bytes)
+	b := []byte(p.answer)
+	b = append(b, '\n')
+	size, err := stdin.Write(b)
 
 	got := askQuestion(0, p, &stdin)
 
@@ -359,8 +359,8 @@ func TestRunQuiz(t *testing.T) {
 	for _, p := range problems {
 		answers += p.answer + "\n"
 	}
-	bytes := []byte(answers)
-	size, err := stdin.Write(bytes)
+	b := []byte(answers)
+	size, err := stdin.Write(b)
 	assert.NoError(t, err)
 	assert.Equal(t, len(answers), size)
 

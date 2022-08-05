@@ -38,8 +38,8 @@ var defaults = config{
 }
 
 // SetVersion is used my the main package to pass version information to the app package.
-func SetVersion(bytes []byte) {
-	slice := strings.Split(string(bytes), "\n")
+func SetVersion(b []byte) {
+	slice := strings.Split(string(b), "\n")
 
 	if slice[0] != "" {
 		metadata.version = slice[0]
