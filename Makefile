@@ -32,6 +32,10 @@ version: build
 	go version
 	@printf "\n"
 
+install: build
+	./scripts/go-install
+	@printf "\n"
+
 clean:
 	go clean
 	rm -fv .coverage.* ./cmd/quiz/.version.txt
