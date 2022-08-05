@@ -115,7 +115,7 @@ jobs:
     - name: Testing with gocritic
       id: go-test-gocritic
       run: |
-        gocritic check -enableAll ./... | reviewdog -efm="%f:%l:%c: %m" -name="gocritic" -reporter=github-pr-check
+        gocritic check -enableAll ./... |& reviewdog -efm="%f:%l:%c: %m" -name="gocritic" -reporter=github-pr-check
 
     - name: Testing with golangci-lint
       id: go-test-golangci-lint
