@@ -120,7 +120,7 @@ jobs:
     - name: Testing with golangci-lint
       id: go-test-golangci-lint
       run: |
-        golangci-lint run --out-format line-number ./... | reviewdog -f=golangci-lint -name="golangci-lint" -filter-mode=added -reporter=github-pr-check
+        golangci-lint run --out-format=line-number ./... | reviewdog -f=golangci-lint -name="golangci-lint" -filter-mode=added -reporter=github-pr-check
 
     - name: Testing with gocyclo
       id: go-test-gocyclo
