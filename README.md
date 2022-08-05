@@ -3,6 +3,8 @@
 [![Bash Workflow](https://github.com/vpayno/gophercises-quizgame/actions/workflows/bash.yml/badge.svg)](https://github.com/vpayno/gophercises-quizgame/actions/workflows/bash.yml)
 [![Git Workflow](https://github.com/vpayno/gophercises-quizgame/actions/workflows/git.yml/badge.svg)](https://github.com/vpayno/gophercises-quizgame/actions/workflows/git.yml)
 [![Link Check Workflow](https://github.com/vpayno/gophercises-quizgame/actions/workflows/links.yml/badge.svg)](https://github.com/vpayno/gophercises-quizgame/actions/workflows/links.yml)
+![Coverage](./reports/.octocov-coverage.svg)
+![Code2Test Ratio](./reports/.octocov-ratio.svg)
 
 # Gophercises Quiz Game Implementation
 

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+declare -a targets
+
+mapfile -t targets < <(grep --recursive --files-with-matches '^func main() {$')
+
+time for target in "${targets[@]}"; do
+	./scripts/go-cmd install "${target}"
+done

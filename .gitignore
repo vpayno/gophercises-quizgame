@@ -1,4 +1,5 @@
 # Binaries for programs and plugins
+build/
 *.exe
 *.exe~
 *.dll
@@ -18,5 +19,5 @@
 # build artifacts
 gophercises-quizgame
 
-# version artifacts
-.version.txt
+# Ignore random things (usually things generaged in CI that we don't want to track).
+octocov

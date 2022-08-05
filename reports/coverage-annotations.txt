@@ -1,0 +1,73 @@
+
+[0m70 	func InitRandSeed(seed int64, debug bool) {[0m
+[0m71 		var b [8]byte[0m
+[0m72 	[0m
+[0m73 		_, err := crypto_rand.Read(b[:])[0m
+[0m74 		if err != nil {[0m
+[31;1m75 			panic("cannot seed math/rand package with cryptographically secure random number generator")[0m
+[0m76 		}[0m
+[0m77 	[0m
+[0m78 		if seed == -1 {[0m
+[0m79 			seed = int64(binary.LittleEndian.Uint64(b[:]))[0m
+[0m80 		}[0m
+[0m81 	[0m
+[0m82 		math_rand.Seed(seed)[0m
+[0m83 	[0m
+[0m84 		if debug {[0m
+[0m85 			fmt.Printf("setting seed to: %d\n", seed)[0m
+[0m86 			fmt.Println(math_rand.Perm(10))[0m
+[0m87 		}[0m
+[0m88 	}[0m
+
+
+[0m149 	func askQuestion(i int, p problem, stdin io.Reader) bool {[0m
+[0m150 		reader := bufio.NewReader(stdin)[0m
+[0m151 	[0m
+[0m152 		for {[0m
+[0m153 			fmt.Printf("%d) %s = ", i+1, p.question)[0m
+[0m154 	[0m
+[0m155 			response, err := reader.ReadString('\n')[0m
+[0m156 	[0m
+[0m157 			// During tests, we need to trim the trailing newline char.[0m
+[0m158 			response = strings.TrimSuffix(response, "\n")[0m
+[0m159 	[0m
+[0m160 			if err == nil {[0m
+[0m161 				return response == p.answer[0m
+[0m162 			}[0m
+[0m163 	[0m
+[31;1m164 			fmt.Println("error enountered, restarting question.", err)[0m
+[0m165 		}[0m
+[0m166 	}[0m
+
+
+[0m118 	func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score {[0m
+[0m119 		s := score{[0m
+[0m120 			points: 0,[0m
+[0m121 			max:    len(problems),[0m
+[0m122 		}[0m
+[0m123 	[0m
+[0m124 		fmt.Println()[0m
+[0m125 		fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)[0m
+[0m126 		fmt.Println()[0m
+[0m127 	[0m
+[0m128 		for i, p := range problems {[0m
+[0m129 			answerCh := make(chan bool)[0m
+[0m130 			go func() {[0m
+[0m131 				answerCh <- askQuestion(i, p, stdin)[0m
+[0m132 			}()[0m
+[0m133 	[0m
+[0m134 			select {[0m
+[0m135 			case <-timer.C:[0m
+[31;1m136 				fmt.Println()[0m
+[31;1m137 				fmt.Println("Time's up!")[0m
+[31;1m138 				return s[0m
+[0m139 			case response := <-answerCh:[0m
+[0m140 				if response {[0m
+[0m141 					s.points++[0m
+[0m142 				}[0m
+[0m143 			}[0m
+[0m144 		}[0m
+[0m145 	[0m
+[0m146 		return s[0m
+[0m147 	}[0m
+

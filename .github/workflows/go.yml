@@ -4,6 +4,8 @@ on:
   pull_request:
 
 env:
+  GOCYCLO_OVER_THRESHOLD: 15
+  OCTOCOV_VERSION: "0.40.1"
   REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -27,6 +29,7 @@ jobs:
       with:
         fetch-depth: 0
         ref: ${{ github.ref }}
+        submodules: recursive
 
     - name: Set up Go ${{ matrix.go-version }}
       id: setup-go
@@ -38,6 +41,37 @@ jobs:
       id: go-version
       run: |
         go version
+
+    - name: Checkout PR Branch
+      id: checkout-branch
+      run: |
+        git status
+        git fetch origin ${{ github.head_ref }}
+        git switch ${{ github.head_ref }}
+        git status
+
+    - name: Run go generate
+      id: go-generate
+      run: |
+        go generate ./...
+
+    - name: Commit go generate Artifacts
+      id: commit-go-generate-artifacts
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        # TODO: add signed commit support
+        git diff --quiet . && exit || true # stop if there's nothing to commit
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        git remote -v
+        git add -u .
+        git status
+        git commit -m 'ci(go): commit CI `go generated` output files'
+        git show
+        #git push origin ${{ github.ref }} # refs/pull/[0-9]+/merge
+        git push origin ${{ github.head_ref }} # branch_name
+        #git push origin ${{ github.base_ref }} # main
 
     - name: Install Go Tools
       id: install-go-tools
@@ -54,13 +88,6 @@ jobs:
         go install github.com/securego/gosec/v2/cmd/gosec@latest
         go install golang.org/x/lint/golint@latest
         go install golang.org/x/tools/cmd/cover@latest
-
-    - name: Run go generate
-      id: go-generate
-      run: |
-        go generate ./...
-        echo ==== ./cmd/quiz/.version.txt ====
-        cat ./cmd/quiz/.version.txt
 
     - name: Analysing the code with golint
       id: golint
@@ -80,22 +107,27 @@ jobs:
     - name: Testing with gotest
       id: go-test-run
       run: |
-        gotest -v -covermode=count -coverprofile=.coverage.out ./...
+        gotest -v -covermode=count -coverprofile=./reports/.coverage.out ./...
 
-    - name: Test Coverage Report
-      id: go-test-coverage
+    - name: Test Coverage Report (txt)
+      id: go-test-coverage-txt
       run: |
-        go tool cover -func=.coverage.out
+        go tool cover -func=./reports/.coverage.out | tee reports/coverage.txt
+
+    - name: Test Coverage Report (html)
+      id: go-test-coverage-html
+      run: |
+        go tool cover -html=./reports/.coverage.out -o=reports/coverage.html
 
     - name: Show Missing Coverage
       id: go-test-coverage-annotate
       run: |
-        gocov convert .coverage.out | gocov annotate -ceiling=100 -color -
+        gocov convert ./reports/.coverage.out | gocov annotate -ceiling=100 -color - | tee reports/coverage-annotations.txt
 
     - name: gocov Coverage Report
       id: go-test-coverage-report
       run: |
-        gocov convert .coverage.out | gocov report
+        gocov convert ./reports/.coverage.out | gocov report | tee reports/coverage-summary.txt
 
     - name: Testing with gosec
       id: go-test-security
@@ -120,4 +152,43 @@ jobs:
     - name: Testing with golangci-lint
       id: go-test-golangci-lint
       run: |
-        golangci-lint run --out-format line-number ./... | reviewdog -f=golangci-lint -name="golangci-lint" -filter-mode=added -reporter=github-pr-check
+        golangci-lint run --out-format=line-number ./... | reviewdog -f=golangci-lint -name="golangci-lint" -filter-mode=added -reporter=github-pr-check
+
+    - name: Testing with gocyclo
+      id: go-test-gocyclo
+      run: |
+        gocyclo -over "${GOCYCLO_OVER_THRESHOLD}" .
+
+    - name: Install octocov
+      id: octocov-install
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        curl -sSL https://github.com/k1LoW/octocov/releases/download/v${OCTOCOV_VERSION}/octocov_v${OCTOCOV_VERSION}_linux_amd64.tar.gz | tar xvzf - octocov
+        ls -lh octocov
+        printf "\n"
+        ./octocov --help
+        printf "\n"
+        ./octocov --version
+
+    - name: Generate octocov Badges
+      id: octocov-badges
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        ./scripts/go-badges-coverage
+
+    - name: Commit Reports
+      id: commit-reports
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        git diff --quiet ./report && exit # stop if there's nothing to commit
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        git remote -v
+        git add ./report
+        git status
+        git commit -m 'ci(reports): commit CI generated files'
+        git show
+        #git push origin ${{ github.ref }} # refs/pull/[0-9]+/merge
+        git push origin ${{ github.head_ref }} # branch_name
+        #git push origin ${{ github.base_ref }} # main

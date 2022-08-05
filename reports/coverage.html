@@ -323,8 +323,8 @@ var defaults = config{
 }
 
 // SetVersion is used my the main package to pass version information to the app package.
-func SetVersion(bytes []byte) <span class="cov1" title="1">{
-        slice := strings.Split(string(bytes), "\n")
+func SetVersion(b []byte) <span class="cov1" title="1">{
+        slice := strings.Split(string(b), "\n")
 
         if slice[0] != "" </span><span class="cov1" title="1">{
                 metadata.version = slice[0]
