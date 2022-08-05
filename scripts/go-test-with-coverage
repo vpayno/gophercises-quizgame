@@ -4,22 +4,22 @@ main()
 {
 	go generate ./...
 
-	echo gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
-	time gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
+	echo gotest -v -covermode=count -coverprofile=./reports/.coverage.out -cover ./...
+	time gotest -v -covermode=count -coverprofile=./reports/.coverage.out -cover ./...
 	printf "\n"
 
 	# go install golang.org/x/tools/cmd/cover@latest
 
-	echo go tool cover -html=.coverage.out -o=report/coverage.html
-	time go tool cover -html=.coverage.out -o=report/coverage.html
+	echo go tool cover -html=./reports/.coverage.out -o=reports/coverage.html
+	time go tool cover -html=./reports/.coverage.out -o=reports/coverage.html
 	printf "\n"
 
-	echo go tool cover -func=.coverage.out -o=report/coverage.txt
-	time go tool cover -func=.coverage.out -o=report/coverage.txt
+	echo go tool cover -func=./reports/.coverage.out -o=reports/coverage.txt
+	time go tool cover -func=./reports/.coverage.out -o=reports/coverage.txt
 	printf "\n"
 
-	printf "=== ./report/coverage.txt ===\n"
-	cat report/coverage.txt
+	printf "=== ./reports/coverage.txt ===\n"
+	cat reports/coverage.txt
 	printf "\n"
 }
 

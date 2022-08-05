@@ -54,15 +54,15 @@ prepare:
 	@printf "\n"
 
 gotest: clean prepare
-	gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
+	gotest -v -covermode=count -coverprofile=./reports/.coverage.out -cover ./...
 	@printf "\n"
 
 cover: gotest
-	gocov convert .coverage.out | gocov report
+	gocov convert ./reports/.coverage.out | gocov report
 	@printf "\n"
 
 annotate: cover
-	gocov convert .coverage.out | gocov annotate -ceiling=100 -color -
+	gocov convert ./reports/.coverage.out | gocov annotate -ceiling=100 -color -
 	@printf "\n"
 
 bench: clean prepare
