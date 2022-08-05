@@ -6,8 +6,6 @@ main()
 	time gotest -v -covermode=count -coverprofile=.coverage.out -cover ./...
 	printf "\n"
 
-	mkdir report
-
 	# go install golang.org/x/tools/cmd/cover@latest
 
 	echo go tool cover -html=.coverage.out -o=report/coverage.html
