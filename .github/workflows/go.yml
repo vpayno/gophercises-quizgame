@@ -4,6 +4,7 @@ on:
   pull_request:
 
 env:
+  OCTOCOV_VERSION: "0.40.1"
   REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -82,10 +83,15 @@ jobs:
       run: |
         gotest -v -covermode=count -coverprofile=./reports/.coverage.out ./...
 
-    - name: Test Coverage Report
-      id: go-test-coverage
+    - name: Test Coverage Report (txt)
+      id: go-test-coverage-txt
       run: |
         go tool cover -func=./reports/.coverage.out | tee reports/coverage.txt
+
+    - name: Test Coverage Report (html)
+      id: go-test-coverage-html
+      run: |
+        go tool cover -html=./reports/.coverage.out -o=reports/coverage.html
 
     - name: Show Missing Coverage
       id: go-test-coverage-annotate
@@ -126,3 +132,37 @@ jobs:
       id: go-test-gocyclo
       run: |
         gocyclo -over 15 .
+
+    - name: Install octocov
+      id: octocov-install
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        curl -sSL https://github.com/k1LoW/octocov/releases/download/v${OCTOCOV_VERSION}/octocov_v${OCTOCOV_VERSION}_linux_amd64.tar.gz | tar xvzf - octocov
+        ls -lh octocov
+        printf "\n"
+        ./octocov --help
+        printf "\n"
+        ./octocov --version
+
+    - name: Generate octocov Badges
+      id: octocov-badges
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        ./scripts/go-badges-coverage
+
+    - name: Commit Reports
+      id: commit-reports
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        git diff --quiet ./report && exit # stop if there's nothing to commit
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        git remote -v
+        git add ./report
+        git status
+        git commit -m 'ci(reports): commit CI generated files'
+        git show
+        #git push origin ${{ github.ref }} # refs/pull/[0-9]+/merge
+        git push origin ${{ github.head_ref }} # branch_name
+        #git push origin ${{ github.base_ref }} # main

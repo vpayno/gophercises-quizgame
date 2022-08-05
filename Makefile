@@ -65,6 +65,9 @@ annotate: cover
 	gocov convert ./reports/.coverage.out | gocov annotate -ceiling=100 -color -
 	@printf "\n"
 
+badges: annotate
+	./scripts/go-badges-coverage
+
 bench: clean prepare
 	go test --run=xxx --bench . --benchmem  ./...
 	@printf "\n"

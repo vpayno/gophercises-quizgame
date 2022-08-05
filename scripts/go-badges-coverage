@@ -13,3 +13,4 @@ printf "\n"
 echo octocov badge ratio '>' ./reports/.octocov-ratio.svg
 ${octocov_bin} badge ratio > ./reports/.octocov-ratio.svg
 printf "\n"
+printf "\n"
