@@ -45,7 +45,7 @@ func TestExit(t *testing.T) {
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, testStdout)
 	if err != nil {
-		t.Error(fmt.Sprint(err))
+		t.Error(err)
 	}
 	got := buf.String()
 	if got != want {
@@ -84,7 +84,7 @@ func TestShowVersion(t *testing.T) {
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, testStdout)
 	if err != nil {
-		t.Error(fmt.Sprint(err))
+		t.Error(err)
 	}
 	got := buf.String()
 	if got != want {

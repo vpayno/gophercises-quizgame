@@ -44,7 +44,7 @@ func TestShowBanner(t *testing.T) {
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, testStdout)
 	if err != nil {
-		t.Error(fmt.Sprint(err))
+		t.Error(err)
 	}
 	got := buf.String()
 	if got != want {
@@ -82,7 +82,7 @@ func TestShowScore(t *testing.T) {
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, testStdout)
 	if err != nil {
-		t.Error(fmt.Sprint(err))
+		t.Error(err)
 	}
 	got := buf.String()
 	if got != want {
@@ -205,7 +205,7 @@ func TestLoadDataMissingFileAndInvalidData(t *testing.T) {
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, testStdout)
 	if err != nil {
-		t.Error(fmt.Sprint(err))
+		t.Error(err)
 	}
 	got := buf.String()
 	if got != want {
@@ -306,7 +306,7 @@ func TestSetupFlagVersion(t *testing.T) {
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, testStdout)
 	if err != nil {
-		t.Error(fmt.Sprint(err))
+		t.Error(err)
 	}
 	got := buf.String()
 	if got != want {
