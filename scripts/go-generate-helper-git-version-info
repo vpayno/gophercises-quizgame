@@ -1,6 +1,12 @@
 #!/bin/bash
 
 declare -i retval=0
+declare keep_ro=false
+
+if [[ ! -w . ]]; then
+	chmod a+w .
+	keep_ro=true
+fi
 
 main()
 {
@@ -13,6 +19,14 @@ main()
 	date -u '+%Y-%m-%dT%H:%M:%SZ' || (( retval++ ))
 }
 
-main > .version.txt
+printf "go generate: creating %s\n\n" "${PWD}/.version.txt"
+
+main | tee ./.version.txt
+
+printf "\n"
+
+if ${keep_ro}; then
+	chmod a-w .
+fi
 
 exit "${retval}"
