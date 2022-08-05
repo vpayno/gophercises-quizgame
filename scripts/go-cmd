@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo go generate
-time go generate
+echo go generate ./...
+time go generate ./...
 printf "\n"
 
 time go "$@"
