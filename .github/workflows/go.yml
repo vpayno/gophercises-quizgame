@@ -4,6 +4,7 @@ on:
   pull_request:
 
 env:
+  GOCYCLO_OVER_THRESHOLD: 15
   OCTOCOV_VERSION: "0.40.1"
   REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -131,7 +132,7 @@ jobs:
     - name: Testing with gocyclo
       id: go-test-gocyclo
       run: |
-        gocyclo -over 15 .
+        gocyclo -over "${GOCYCLO_OVER_THRESHOLD}" .
 
     - name: Install octocov
       id: octocov-install
