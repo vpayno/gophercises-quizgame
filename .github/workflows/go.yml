@@ -42,6 +42,37 @@ jobs:
       run: |
         go version
 
+    - name: Checkout PR Branch
+      id: checkout-branch
+      run: |
+        git status
+        git fetch origin ${{ github.head_ref }}
+        git switch ${{ github.head_ref }}
+        git status
+
+    - name: Run go generate
+      id: go-generate
+      run: |
+        go generate ./...
+
+    - name: Commit go generate Artifacts
+      id: commit-go-generate-artifacts
+      if: false && matrix.os == 'ubuntu-latest'
+      run: |
+        # TODO: add signed commit support
+        git diff --quiet . && exit || true # stop if there's nothing to commit
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        git remote -v
+        git add -u .
+        git status
+        git commit -m 'ci(go): commit CI `go generated` output files'
+        git show
+        #git push origin ${{ github.ref }} # refs/pull/[0-9]+/merge
+        git push origin ${{ github.head_ref }} # branch_name
+        #git push origin ${{ github.base_ref }} # main
+
     - name: Install Go Tools
       id: install-go-tools
       run: |
@@ -57,13 +88,6 @@ jobs:
         go install github.com/securego/gosec/v2/cmd/gosec@latest
         go install golang.org/x/lint/golint@latest
         go install golang.org/x/tools/cmd/cover@latest
-
-    - name: Run go generate
-      id: go-generate
-      run: |
-        go generate ./...
-        echo ==== ./cmd/quiz/.version.txt ====
-        cat ./cmd/quiz/.version.txt
 
     - name: Analysing the code with golint
       id: golint
