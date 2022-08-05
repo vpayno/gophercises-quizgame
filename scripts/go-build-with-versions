@@ -1,4 +1,0 @@
-#!/bin/bash
-
-echo scripts/go-cmd-with-versions build "$@"
-time scripts/go-cmd-with-versions build "$@"

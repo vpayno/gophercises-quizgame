@@ -1,23 +1,23 @@
 
-67     	func InitRandSeed(seed int64, debug bool) {
-68     		var b [8]byte
-69     	
-70     		_, err := crypto_rand.Read(b[:])
-71     		if err != nil {
-72 MISS			panic("cannot seed math/rand package with cryptographically secure random number generator")
-73     		}
-74     	
-75     		if seed == -1 {
-76     			seed = int64(binary.LittleEndian.Uint64(b[:]))
-77     		}
-78     	
-79     		math_rand.Seed(seed)
-80     	
-81     		if debug {
-82     			fmt.Printf("setting seed to: %d\n", seed)
-83     			fmt.Println(math_rand.Perm(10))
-84     		}
-85     	}
+70     	func InitRandSeed(seed int64, debug bool) {
+71     		var b [8]byte
+72
+73     		_, err := crypto_rand.Read(b[:])
+74     		if err != nil {
+75 MISS			panic("cannot seed math/rand package with cryptographically secure random number generator")
+76     		}
+77
+78     		if seed == -1 {
+79     			seed = int64(binary.LittleEndian.Uint64(b[:]))
+80     		}
+81
+82     		math_rand.Seed(seed)
+83
+84     		if debug {
+85     			fmt.Printf("setting seed to: %d\n", seed)
+86     			fmt.Println(math_rand.Perm(10))
+87     		}
+88     	}
 
 
 149     	func askQuestion(i int, p problem, stdin io.Reader) bool {

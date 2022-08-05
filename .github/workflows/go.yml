@@ -24,6 +24,9 @@ jobs:
     - name: Checkout Repo
       id: checkout-repo
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        ref: ${{ github.ref }}
 
     - name: Set up Go ${{ matrix.go-version }}
       id: setup-go
@@ -51,6 +54,13 @@ jobs:
         go install github.com/securego/gosec/v2/cmd/gosec@latest
         go install golang.org/x/lint/golint@latest
         go install golang.org/x/tools/cmd/cover@latest
+
+    - name: Run go generate
+      id: go-generate
+      run: |
+        go generate ./...
+        echo ==== ./cmd/quiz/.version.txt ====
+        cat ./cmd/quiz/.version.txt
 
     - name: Analysing the code with golint
       id: golint

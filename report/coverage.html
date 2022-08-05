@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go (93.9%)</option>
 				
-				<option value="file2">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.2%)</option>
+				<option value="file2">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.3%)</option>
 				
 				</select>
 			</div>
@@ -86,16 +86,17 @@
 
 import (
         app "github.com/vpayno/gophercises-quizgame/internal/app/quiz"
+
+        _ "embed"
 )
 
-var version string
-var gitVersion string
-var gitHash string
-var buildTime string
+//go:generate bash ../../scripts/go-generate-helper-git-version-info
+//go:embed .version.txt
+var version []byte
 
 func init() <span class="cov8" title="1">{
         app.InitRandSeed(-1, false)
-        app.SetVersion(version, gitVersion, gitHash, buildTime)
+        app.SetVersion(version)
 }</span>
 
 func main() <span class="cov8" title="1">{
@@ -290,6 +291,7 @@ import (
         "fmt"
         math_rand "math/rand"
         "os"
+        "strings"
 )
 
 type appInfo struct {
@@ -321,7 +323,9 @@ var defaults = config{
 }
 
 // SetVersion is used my the main package to pass version information to the app package.
-func SetVersion(slice ...string) <span class="cov1" title="1">{
+func SetVersion(bytes []byte) <span class="cov1" title="1">{
+        slice := strings.Split(string(bytes), "\n")
+
         if slice[0] != "" </span><span class="cov1" title="1">{
                 metadata.version = slice[0]
         }</span>

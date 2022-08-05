@@ -6,6 +6,7 @@ import (
 	"io"
 	math_rand "math/rand"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -100,7 +101,9 @@ func TestSetVersion(t *testing.T) {
 		buildTime:  "buildTime",
 	}
 
-	SetVersion(want.version, want.gitVersion, want.gitHash, want.buildTime)
+	strSlice := []string{want.version, want.gitVersion, want.gitHash, want.buildTime}
+	bytes := []byte(strings.Join(strSlice, "\n") + "\n")
+	SetVersion(bytes)
 
 	got := metadata
 

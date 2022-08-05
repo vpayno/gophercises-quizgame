@@ -6,6 +6,7 @@ import (
 	"fmt"
 	math_rand "math/rand"
 	"os"
+	"strings"
 )
 
 type appInfo struct {
@@ -37,7 +38,9 @@ var defaults = config{
 }
 
 // SetVersion is used my the main package to pass version information to the app package.
-func SetVersion(slice ...string) {
+func SetVersion(bytes []byte) {
+	slice := strings.Split(string(bytes), "\n")
+
 	if slice[0] != "" {
 		metadata.version = slice[0]
 	}

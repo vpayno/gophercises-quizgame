@@ -17,3 +17,6 @@
 
 # build artifacts
 gophercises-quizgame
+
+# version artifacts
+.version.txt
