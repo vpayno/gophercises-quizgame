@@ -16,10 +16,18 @@
 
 ## How to Install
 
-For `tag`, use `main`, `latest` or a tagged version.
+Using `go install`
 
 ```
-$ go install github.com/vpayno/gophercises-quizgame/cmd/quiz@tag
+$ go install github.com/vpayno/gophercises-quizgame/cmd/quiz@latest
+```
+
+or
+
+```
+$ git clone https://github.com/vpayno/gophercises-quizgame.git
+$ cd gophercises-quizgame
+$ make install
 ```
 
 ## Usage
