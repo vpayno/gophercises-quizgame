@@ -1,0 +1,31 @@
+# gophercises-quizgame TODO List
+
+- embedd default quiz data?
+- add label/summary for releases
+- add changelog for releases
+- change release commit message to "release: vx.y.z - label/summary"
+- add signed commit support to Go Workflow
+- experiment with adding logging
+- experiment with monad patterns
+- add reviewdog for gocyclo
+- add quiz data file generator
+- add automatic quiz data generator (useful for creating random math problems)
+- figure out if the timeout can be extended everytime a question is answered and wrong answers reduce time
+- figure out the v0/v1 and v2 url stuff in go.mod
+- figure out how to call out development dependencies (like requirements-{dev,test}.txt)
+- use dagger ci to implement ci for github and gitlag
+- add a webassembly version
+- add CONTRIBUTING.md
+- add CHANGELOG
+- add GitHub Pages
+- add GitLab wiki
+- add GitLab Pages
+- add http/https data file source
+- add url support for quiz data sources (including a dir url and browse support)
+- add local-fs directory data sources with brownsing
+- add Dockerfile
+- add AUTHORS.md
+- add tests for the remaining 5% of untested code
+- how useful is it to have a 1:2 code to test ratio?
+- add cobra cli
+- experiment with Go Releaser
