@@ -24,3 +24,7 @@ main()
 }
 
 time main
+
+echo git restore ./cmd/quiz/.version.txt
+time git restore ./cmd/quiz/.version.txt
+printf "\n"

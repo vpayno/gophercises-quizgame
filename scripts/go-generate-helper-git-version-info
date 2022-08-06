@@ -1,8 +1,24 @@
 #!/bin/bash
 
+declare release_ver="${1:-not_set}"
+
 declare -i retval=0
 declare keep_ro=false
+declare version
 declare -a targets
+declare is_release=false
+
+if [[ ${release_ver} == not_set ]]; then
+	read -r -a version < <(git describe --tags --long | tr '-' ' ')
+else
+	version=( "${release_ver}" )
+	is_release=true
+
+	if ! git diff --quiet; then
+		printf "ERROR: Please commit/stage your changes before running this script in release mode.\n"
+		exit 1
+	fi
+fi
 
 mapfile -t targets < <(git grep --recursive --files-with-matches '^func main() {$' | xargs dirname)
 
@@ -15,13 +31,20 @@ for target in "${targets[@]}"; do
 	printf "go generate: creating %s\n\n" "${PWD}/${target}/.version.txt"
 
 	{
-		git describe --tags --abbrev=0 || (( retval++ ))
+		if ${is_release}; then
+			printf "%s\n" "${version[0]}"
+		else
+			git describe --tags --abbrev=0 || (( retval++ ))
 
-		git describe --tags --long || (( retval++ ))
+			# checking if the commit count (middle number) isn't 0
+			if [[ ${version[1]} -ne 0 ]]; then
+				git describe --tags --long || (( retval++ ))
 
-		git rev-parse HEAD || (( retval++ ))
+				git rev-parse HEAD || (( retval++ ))
 
-		date -u '+%Y-%m-%dT%H:%M:%SZ' || (( retval++ ))
+				date -u '+%Y-%m-%dT%H:%M:%SZ' || (( retval++ ))
+			fi
+		fi
 
 	} > "./${target}/.version.txt"
 
@@ -29,9 +52,13 @@ for target in "${targets[@]}"; do
 
 	printf "\n"
 
+	${is_release} && git add -u . "./${target}/.version.txt"
+
 	if ${keep_ro}; then
 		chmod a-w .
 	fi
 done
+
+${is_release} && git commit -m "release: ${release_ver} version bump"
 
 exit "${retval}"

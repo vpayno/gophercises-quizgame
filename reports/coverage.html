@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go (93.9%)</option>
 				
-				<option value="file2">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.3%)</option>
+				<option value="file2">github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go (96.9%)</option>
 				
 				</select>
 			</div>
@@ -303,11 +303,8 @@ type appInfo struct {
 }
 
 var metadata = appInfo{
-        name:       "Gophercise Quiz App",
-        version:    "0.0.0",
-        gitVersion: "0.0.0",
-        gitHash:    "abcdef",
-        buildTime:  "1970-01-01T12:00:00Z",
+        name:    "Gophercise Quiz App",
+        version: "0.0.0",
 }
 
 type config struct {
@@ -323,31 +320,45 @@ var defaults = config{
 }
 
 // SetVersion is used my the main package to pass version information to the app package.
-func SetVersion(b []byte) <span class="cov1" title="1">{
+func SetVersion(b []byte) <span class="cov5" title="2">{
         slice := strings.Split(string(b), "\n")
+        slice = slice[:len(slice)-1]
 
-        if slice[0] != "" </span><span class="cov1" title="1">{
+        if slice[0] != "" </span><span class="cov5" title="2">{
                 metadata.version = slice[0]
         }</span>
-        <span class="cov1" title="1">if slice[1] != "" </span><span class="cov1" title="1">{
-                metadata.gitVersion = slice[1]
-        }</span>
-        <span class="cov1" title="1">if slice[2] != "" </span><span class="cov1" title="1">{
-                metadata.gitHash = slice[2]
-        }</span>
-        <span class="cov1" title="1">if slice[3] != "" </span><span class="cov1" title="1">{
-                metadata.buildTime = slice[3]
-        }</span>
+
+        <span class="cov5" title="2">if len(slice) &gt; 1 </span><span class="cov5" title="2">{
+                if slice[1] != "" </span><span class="cov5" title="2">{
+                        metadata.gitVersion = slice[1]
+                }</span>
+                <span class="cov5" title="2">if slice[2] != "" </span><span class="cov5" title="2">{
+                        metadata.gitHash = slice[2]
+                }</span>
+                <span class="cov5" title="2">if slice[3] != "" </span><span class="cov5" title="2">{
+                        metadata.buildTime = slice[3]
+                }</span>
+        }
 }
 
 func showVersion() <span class="cov5" title="2">{
         fmt.Println()
-        fmt.Printf("%s Version: %s\n", metadata.name, metadata.version)
-        fmt.Printf("git version: %s\n", metadata.gitVersion)
-        fmt.Printf("   git hash: %s\n", metadata.gitHash)
-        fmt.Printf(" build time: %s\n", metadata.buildTime)
-        fmt.Println()
-}</span>
+        fmt.Printf("%s Version: %s\n\n", metadata.name, metadata.version)
+
+        if metadata.gitVersion != "" </span><span class="cov5" title="2">{
+                fmt.Printf("git version: %s\n", metadata.gitVersion)
+        }</span>
+
+        <span class="cov5" title="2">if metadata.gitHash != "" </span><span class="cov5" title="2">{
+                fmt.Printf("   git hash: %s\n", metadata.gitHash)
+        }</span>
+
+        <span class="cov5" title="2">if metadata.buildTime != "" </span><span class="cov5" title="2">{
+                fmt.Printf(" build time: %s\n", metadata.buildTime)
+        }</span>
+
+        <span class="cov5" title="2">fmt.Println()</span>
+}
 
 // InitRandSeed seeds the random number library.
 // Pass -1 to auto-generate a seed. Pass true to enable "debuging" output.

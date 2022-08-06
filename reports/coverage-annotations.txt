@@ -1,73 +1,73 @@
 
-[0m70 	func InitRandSeed(seed int64, debug bool) {[0m
-[0m71 		var b [8]byte[0m
-[0m72 	[0m
-[0m73 		_, err := crypto_rand.Read(b[:])[0m
-[0m74 		if err != nil {[0m
-[31;1m75 			panic("cannot seed math/rand package with cryptographically secure random number generator")[0m
-[0m76 		}[0m
-[0m77 	[0m
-[0m78 		if seed == -1 {[0m
-[0m79 			seed = int64(binary.LittleEndian.Uint64(b[:]))[0m
-[0m80 		}[0m
-[0m81 	[0m
-[0m82 		math_rand.Seed(seed)[0m
-[0m83 	[0m
-[0m84 		if debug {[0m
-[0m85 			fmt.Printf("setting seed to: %d\n", seed)[0m
-[0m86 			fmt.Println(math_rand.Perm(10))[0m
-[0m87 		}[0m
-[0m88 	}[0m
+ 81     	func InitRandSeed(seed int64, debug bool) {
+ 82     		var b [8]byte
+ 83
+ 84     		_, err := crypto_rand.Read(b[:])
+ 85     		if err != nil {
+ 86 MISS			panic("cannot seed math/rand package with cryptographically secure random number generator")
+ 87     		}
+ 88
+ 89     		if seed == -1 {
+ 90     			seed = int64(binary.LittleEndian.Uint64(b[:]))
+ 91     		}
+ 92
+ 93     		math_rand.Seed(seed)
+ 94
+ 95     		if debug {
+ 96     			fmt.Printf("setting seed to: %d\n", seed)
+ 97     			fmt.Println(math_rand.Perm(10))
+ 98     		}
+ 99     	}
 
 
-[0m149 	func askQuestion(i int, p problem, stdin io.Reader) bool {[0m
-[0m150 		reader := bufio.NewReader(stdin)[0m
-[0m151 	[0m
-[0m152 		for {[0m
-[0m153 			fmt.Printf("%d) %s = ", i+1, p.question)[0m
-[0m154 	[0m
-[0m155 			response, err := reader.ReadString('\n')[0m
-[0m156 	[0m
-[0m157 			// During tests, we need to trim the trailing newline char.[0m
-[0m158 			response = strings.TrimSuffix(response, "\n")[0m
-[0m159 	[0m
-[0m160 			if err == nil {[0m
-[0m161 				return response == p.answer[0m
-[0m162 			}[0m
-[0m163 	[0m
-[31;1m164 			fmt.Println("error enountered, restarting question.", err)[0m
-[0m165 		}[0m
-[0m166 	}[0m
+149     	func askQuestion(i int, p problem, stdin io.Reader) bool {
+150     		reader := bufio.NewReader(stdin)
+151
+152     		for {
+153     			fmt.Printf("%d) %s = ", i+1, p.question)
+154
+155     			response, err := reader.ReadString('\n')
+156
+157     			// During tests, we need to trim the trailing newline char.
+158     			response = strings.TrimSuffix(response, "\n")
+159
+160     			if err == nil {
+161     				return response == p.answer
+162     			}
+163
+164 MISS			fmt.Println("error enountered, restarting question.", err)
+165     		}
+166     	}
 
 
-[0m118 	func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score {[0m
-[0m119 		s := score{[0m
-[0m120 			points: 0,[0m
-[0m121 			max:    len(problems),[0m
-[0m122 		}[0m
-[0m123 	[0m
-[0m124 		fmt.Println()[0m
-[0m125 		fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)[0m
-[0m126 		fmt.Println()[0m
-[0m127 	[0m
-[0m128 		for i, p := range problems {[0m
-[0m129 			answerCh := make(chan bool)[0m
-[0m130 			go func() {[0m
-[0m131 				answerCh <- askQuestion(i, p, stdin)[0m
-[0m132 			}()[0m
-[0m133 	[0m
-[0m134 			select {[0m
-[0m135 			case <-timer.C:[0m
-[31;1m136 				fmt.Println()[0m
-[31;1m137 				fmt.Println("Time's up!")[0m
-[31;1m138 				return s[0m
-[0m139 			case response := <-answerCh:[0m
-[0m140 				if response {[0m
-[0m141 					s.points++[0m
-[0m142 				}[0m
-[0m143 			}[0m
-[0m144 		}[0m
-[0m145 	[0m
-[0m146 		return s[0m
-[0m147 	}[0m
+118     	func runQuiz(c config, problems []problem, timer *time.Timer, stdin io.Reader) score {
+119     		s := score{
+120     			points: 0,
+121     			max:    len(problems),
+122     		}
+123
+124     		fmt.Println()
+125     		fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
+126     		fmt.Println()
+127
+128     		for i, p := range problems {
+129     			answerCh := make(chan bool)
+130     			go func() {
+131     				answerCh <- askQuestion(i, p, stdin)
+132     			}()
+133
+134     			select {
+135     			case <-timer.C:
+136 MISS				fmt.Println()
+137 MISS				fmt.Println("Time's up!")
+138 MISS				return s
+139     			case response := <-answerCh:
+140     				if response {
+141     					s.points++
+142     				}
+143     			}
+144     		}
+145
+146     		return s
+147     	}
 

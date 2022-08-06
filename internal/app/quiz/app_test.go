@@ -284,8 +284,12 @@ func TestSetupFlagVersion(t *testing.T) {
 		os.Stdout = osStdout
 	}()
 
+	metadata.gitVersion = "1.2.3-456-abcdef"
+	metadata.gitHash = "abcdefabcdefabcdefabcdefabcdefabcdef"
+	metadata.buildTime = "date-time"
+
 	want := "\n"
-	want += fmt.Sprintf("%s Version: %s\n", metadata.name, metadata.version)
+	want += fmt.Sprintf("%s Version: %s\n\n", metadata.name, metadata.version)
 	want += fmt.Sprintf("git version: %s\n", metadata.gitVersion)
 	want += fmt.Sprintf("   git hash: %s\n", metadata.gitHash)
 	want += fmt.Sprintf(" build time: %s\n", metadata.buildTime)

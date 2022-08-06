@@ -18,11 +18,8 @@ type appInfo struct {
 }
 
 var metadata = appInfo{
-	name:       "Gophercise Quiz App",
-	version:    "0.0.0",
-	gitVersion: "0.0.0",
-	gitHash:    "abcdef",
-	buildTime:  "1970-01-01T12:00:00Z",
+	name:    "Gophercise Quiz App",
+	version: "0.0.0",
 }
 
 type config struct {
@@ -40,27 +37,41 @@ var defaults = config{
 // SetVersion is used my the main package to pass version information to the app package.
 func SetVersion(b []byte) {
 	slice := strings.Split(string(b), "\n")
+	slice = slice[:len(slice)-1]
 
 	if slice[0] != "" {
 		metadata.version = slice[0]
 	}
-	if slice[1] != "" {
-		metadata.gitVersion = slice[1]
-	}
-	if slice[2] != "" {
-		metadata.gitHash = slice[2]
-	}
-	if slice[3] != "" {
-		metadata.buildTime = slice[3]
+
+	if len(slice) > 1 {
+		if slice[1] != "" {
+			metadata.gitVersion = slice[1]
+		}
+		if slice[2] != "" {
+			metadata.gitHash = slice[2]
+		}
+		if slice[3] != "" {
+			metadata.buildTime = slice[3]
+		}
 	}
 }
 
 func showVersion() {
 	fmt.Println()
-	fmt.Printf("%s Version: %s\n", metadata.name, metadata.version)
-	fmt.Printf("git version: %s\n", metadata.gitVersion)
-	fmt.Printf("   git hash: %s\n", metadata.gitHash)
-	fmt.Printf(" build time: %s\n", metadata.buildTime)
+	fmt.Printf("%s Version: %s\n\n", metadata.name, metadata.version)
+
+	if metadata.gitVersion != "" {
+		fmt.Printf("git version: %s\n", metadata.gitVersion)
+	}
+
+	if metadata.gitHash != "" {
+		fmt.Printf("   git hash: %s\n", metadata.gitHash)
+	}
+
+	if metadata.buildTime != "" {
+		fmt.Printf(" build time: %s\n", metadata.buildTime)
+	}
+
 	fmt.Println()
 }
 

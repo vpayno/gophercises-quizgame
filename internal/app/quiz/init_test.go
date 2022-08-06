@@ -67,12 +67,24 @@ func TestShowVersion(t *testing.T) {
 		os.Stdout = osStdout
 	}()
 
+	wantMetadata := appInfo{
+		name:       metadata.name,
+		version:    "version",
+		gitVersion: "gitVersion",
+		gitHash:    "gitHash",
+		buildTime:  "buildTime",
+	}
+
+	strSlice := []string{wantMetadata.version, wantMetadata.gitVersion, wantMetadata.gitHash, wantMetadata.buildTime}
+	b := []byte(strings.Join(strSlice, "\n") + "\n")
+	SetVersion(b)
+
 	// It's a silly test but I need the practice.
 	want := "\n"
-	want += fmt.Sprintf("%s Version: %s\n", metadata.name, metadata.version)
-	want += fmt.Sprintf("git version: %s\n", metadata.gitVersion)
-	want += fmt.Sprintf("   git hash: %s\n", metadata.gitHash)
-	want += fmt.Sprintf(" build time: %s\n", metadata.buildTime)
+	want += fmt.Sprintf("%s Version: %s\n\n", wantMetadata.name, wantMetadata.version)
+	want += fmt.Sprintf("git version: %s\n", wantMetadata.gitVersion)
+	want += fmt.Sprintf("   git hash: %s\n", wantMetadata.gitHash)
+	want += fmt.Sprintf(" build time: %s\n", wantMetadata.buildTime)
 	want += "\n"
 
 	// Run the function who's output we want to capture.
@@ -88,7 +100,7 @@ func TestShowVersion(t *testing.T) {
 	}
 	got := buf.String()
 	if got != want {
-		t.Errorf("showBanner(); want %q, got %q", want, got)
+		t.Errorf("showVersion(); want %q, got %q", want, got)
 	}
 }
 
