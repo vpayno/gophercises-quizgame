@@ -1,6 +1,6 @@
 mode: count
-github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go:13.13,16.2 2 1
-github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go:18.13,20.2 1 1
+github.com/vpayno/gophercises-quizgame/cmd/gophercises-quizgame/gophercises-quizgame.go:13.13,16.2 2 1
+github.com/vpayno/gophercises-quizgame/cmd/gophercises-quizgame/gophercises-quizgame.go:18.13,20.2 1 1
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:26.28,28.2 1 5
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:32.19,35.2 2 2
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go:38.15,52.2 7 1

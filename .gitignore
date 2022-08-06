@@ -17,7 +17,7 @@ build/
 # vendor/
 
 # build artifacts
-gophercises-quizgame
+/gophercises-quizgame
 
 # Ignore random things (usually things generaged in CI that we don't want to track).
 octocov

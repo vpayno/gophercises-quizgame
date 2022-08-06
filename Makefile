@@ -6,7 +6,7 @@
 
 .PHONY: all run build version clean prepare gotest cover annotate bench check vet ineffassign lint gocyclo gocritic golangci-lint misspell vendor tidy gosec
 
-BIN_FILE=./build/quiz
+BIN_FILE=./build/gophercises-quizgame
 
 all: clean annotate check
 
@@ -19,9 +19,9 @@ build: clean prepare
 build-all:
 	mkdir -pv build/
 	@printf "Building for every OS and Platform\n\n"
-	GOOS=freebsd GOARCH=386 go build -o "${BIN_FILE}"-freebsd-386 ./cmd/quiz/main.go
-	GOOS=linux   GOARCH=386 go build -o "${BIN_FILE}"-linux-386 ./cmd/quiz/main.go
-	GOOS=windows GOARCH=386 go build -o "${BIN_FILE}"-windows-386 ./cmd/quiz/main.go
+	GOOS=freebsd GOARCH=386 go build -o "${BIN_FILE}"-freebsd-386 ./cmd/gophercises-quizgame/gophercises-quizgame.go
+	GOOS=linux   GOARCH=386 go build -o "${BIN_FILE}"-linux-386 ./cmd/gophercises-quizgame/gophercises-quizgame.go
+	GOOS=windows GOARCH=386 go build -o "${BIN_FILE}"-windows-386 ./cmd/gophercises-quizgame/gophercises-quizgame.go
 	@printf "\n"
 
 run: build prepare
@@ -38,7 +38,7 @@ install: build
 
 clean:
 	go clean
-	rm -fv .coverage.* ./cmd/quiz/.version.txt
+	rm -fv .coverage.* ./cmd/gophercises-quizgame/.version.txt
 	@printf "\n"
 
 vendor:

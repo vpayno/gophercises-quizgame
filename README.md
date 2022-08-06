@@ -19,7 +19,7 @@
 Using `go install`
 
 ```
-$ go install github.com/vpayno/gophercises-quizgame/cmd/quiz@latest
+$ go install github.com/vpayno/gophercises-quizgame/cmd/gophercises-quizgame@latest
 ```
 
 or
@@ -33,7 +33,7 @@ $ make install
 ## Usage
 
 ```
-$ go run ./cmd/quiz/gophercises-quizgame.go --help
+$ go run ./cmd/gophercises-quizgame/gophercises-quizgame.go --help
 Usage of /tmp/go-build172411189/b001/exe/gophercises-quizgame:
   -csv string
         a csv file in the format of 'question,answwer' (default "./data/problems.csv")
@@ -50,7 +50,7 @@ Usage of /tmp/go-build172411189/b001/exe/gophercises-quizgame:
 You have 30 seconds to answer all the questions.
 
 ```
-$ go run ./cmd/quiz/gophercises-quizgame.go
+$ go run ./cmd/gophercises-quizgame/gophercises-quizgame.go
 Gophercise Quiz App Version 0.0.0
 
 
@@ -63,7 +63,7 @@ You scored 0 out of 12 points (0%).
 ```
 
 ```
-$ go run ./cmd/quiz/gophercises-quizgame.go
+$ go run ./cmd/gophercises-quizgame/gophercises-quizgame.go
 Gophercise Quiz App Version 0.0.0
 
 

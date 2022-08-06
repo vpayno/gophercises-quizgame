@@ -1,7 +1,7 @@
 
-github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go	 init	 100.00% (2/2)
-github.com/vpayno/gophercises-quizgame/cmd/quiz/gophercises-quizgame.go	 main	 100.00% (1/1)
-github.com/vpayno/gophercises-quizgame/cmd/quiz				 ----	 100.00% (3/3)
+github.com/vpayno/gophercises-quizgame/cmd/gophercises-quizgame/gophercises-quizgame.go	 init	 100.00% (2/2)
+github.com/vpayno/gophercises-quizgame/cmd/gophercises-quizgame/gophercises-quizgame.go	 main	 100.00% (1/1)
+github.com/vpayno/gophercises-quizgame/cmd/gophercises-quizgame				 ----	 100.00% (3/3)
 
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/app.go	 loadData	 100.00% (11/11)
 github.com/vpayno/gophercises-quizgame/internal/app/quiz/init.go SetVersion	 100.00% (11/11)

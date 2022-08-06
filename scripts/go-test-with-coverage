@@ -25,6 +25,6 @@ main()
 
 time main
 
-echo git restore ./cmd/quiz/.version.txt
-time git restore ./cmd/quiz/.version.txt
+echo git restore ./cmd/gophercises-quizgame/.version.txt
+time git restore ./cmd/gophercises-quizgame/.version.txt
 printf "\n"

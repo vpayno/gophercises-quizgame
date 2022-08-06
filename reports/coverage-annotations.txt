@@ -1,18 +1,18 @@
 
  81     	func InitRandSeed(seed int64, debug bool) {
  82     		var b [8]byte
- 83
+ 83     	
  84     		_, err := crypto_rand.Read(b[:])
  85     		if err != nil {
  86 MISS			panic("cannot seed math/rand package with cryptographically secure random number generator")
  87     		}
- 88
+ 88     	
  89     		if seed == -1 {
  90     			seed = int64(binary.LittleEndian.Uint64(b[:]))
  91     		}
- 92
+ 92     	
  93     		math_rand.Seed(seed)
- 94
+ 94     	
  95     		if debug {
  96     			fmt.Printf("setting seed to: %d\n", seed)
  97     			fmt.Println(math_rand.Perm(10))
@@ -22,19 +22,19 @@
 
 149     	func askQuestion(i int, p problem, stdin io.Reader) bool {
 150     		reader := bufio.NewReader(stdin)
-151
+151     	
 152     		for {
 153     			fmt.Printf("%d) %s = ", i+1, p.question)
-154
+154     	
 155     			response, err := reader.ReadString('\n')
-156
+156     	
 157     			// During tests, we need to trim the trailing newline char.
 158     			response = strings.TrimSuffix(response, "\n")
-159
+159     	
 160     			if err == nil {
 161     				return response == p.answer
 162     			}
-163
+163     	
 164 MISS			fmt.Println("error enountered, restarting question.", err)
 165     		}
 166     	}
@@ -45,17 +45,17 @@
 120     			points: 0,
 121     			max:    len(problems),
 122     		}
-123
+123     	
 124     		fmt.Println()
 125     		fmt.Printf("You have %d seconds to answer %d question.\n", c.timeLimit, s.max)
 126     		fmt.Println()
-127
+127     	
 128     		for i, p := range problems {
 129     			answerCh := make(chan bool)
 130     			go func() {
 131     				answerCh <- askQuestion(i, p, stdin)
 132     			}()
-133
+133     	
 134     			select {
 135     			case <-timer.C:
 136 MISS				fmt.Println()
@@ -67,7 +67,8 @@
 142     				}
 143     			}
 144     		}
-145
+145     	
 146     		return s
 147     	}
+
 
