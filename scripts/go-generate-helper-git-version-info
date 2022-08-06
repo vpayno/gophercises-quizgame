@@ -2,31 +2,36 @@
 
 declare -i retval=0
 declare keep_ro=false
+declare -a targets
 
-if [[ ! -w . ]]; then
-	chmod a+w .
-	keep_ro=true
-fi
+mapfile -t targets < <(git grep --recursive --files-with-matches '^func main() {$' | xargs dirname)
 
-main()
-{
-	git describe --tags --abbrev=0 || (( retval++ ))
+for target in "${targets[@]}"; do
+	if [[ ! -w . ]]; then
+		chmod a+w .
+		keep_ro=true
+	fi
 
-	git describe --tags --long || (( retval++ ))
+	printf "go generate: creating %s\n\n" "${PWD}/${target}/.version.txt"
 
-	git rev-parse HEAD || (( retval++ ))
+	{
+		git describe --tags --abbrev=0 || (( retval++ ))
 
-	date -u '+%Y-%m-%dT%H:%M:%SZ' || (( retval++ ))
-}
+		git describe --tags --long || (( retval++ ))
 
-printf "go generate: creating %s\n\n" "${PWD}/.version.txt"
+		git rev-parse HEAD || (( retval++ ))
 
-main | tee ./.version.txt
+		date -u '+%Y-%m-%dT%H:%M:%SZ' || (( retval++ ))
 
-printf "\n"
+	} > "./${target}/.version.txt"
 
-if ${keep_ro}; then
-	chmod a-w .
-fi
+	cat "./${target}/.version.txt"
+
+	printf "\n"
+
+	if ${keep_ro}; then
+		chmod a-w .
+	fi
+done
 
 exit "${retval}"
